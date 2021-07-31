@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Advanced_Movement;
 using UnityEditor;
 
-namespace Advanced_Movement{
+namespace Editor.Advanced_Movement{
     [CustomEditor(typeof(PlayerMovement))]
     public class PlayerMovementEditor : UnityEditor.Editor
     {
