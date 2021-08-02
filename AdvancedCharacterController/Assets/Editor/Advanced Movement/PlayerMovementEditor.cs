@@ -30,6 +30,7 @@ namespace Editor.Advanced_Movement{
         private SerializedProperty _minLookClamp;
         private SerializedProperty _maxLookClamp;
         private SerializedProperty _groundMask;
+        private SerializedProperty _runMode;
 
         #endregion
 
@@ -60,6 +61,7 @@ namespace Editor.Advanced_Movement{
             _minLookClamp = serializedObject.FindProperty("minVerticalLookClampValue");
             _maxLookClamp = serializedObject.FindProperty("maxVerticalLookClampValue");
             _groundMask = serializedObject.FindProperty("groundMask");
+            _runMode = serializedObject.FindProperty("runMode");
             _groundCheckDistance = serializedObject.FindProperty("groundCheckCastDistance");
             _numberOfGroundCheckPoints = serializedObject.FindProperty("numberOfGroundedCheckPoints");
             _radiusOfGroundedCheckPoints = serializedObject.FindProperty("radiusOfGroundedCheckPoints");
@@ -100,6 +102,7 @@ namespace Editor.Advanced_Movement{
 
             EditorGUILayout.PropertyField(_desiredPerspective);
 
+            EditorGUI.indentLevel++;
             switch (_playerMovement.desiredPerspective)
             {
                 case PlayerMovement.FirstOrThird.First:
@@ -121,6 +124,7 @@ namespace Editor.Advanced_Movement{
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            EditorGUI.indentLevel--;
 
             #endregion
             EditorGUILayout.Space(25);
@@ -164,8 +168,8 @@ namespace Editor.Advanced_Movement{
                 
                 _foldoutsDictionary[flagString] = EditorGUILayout.Foldout(_foldoutsDictionary[flagString], flag.ToString());
                 
-                if (_foldoutsDictionary[flagString])
-                {
+                if (_foldoutsDictionary[flagString]){
+                    EditorGUI.indentLevel++;
                     switch(flag)
                     {
                         case PlayerMovement.Mechanics.Nothing:
@@ -181,6 +185,7 @@ namespace Editor.Advanced_Movement{
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+                    EditorGUI.indentLevel--;
                 }
             }
         }
@@ -190,6 +195,7 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.LabelField("Movement Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_walkSpeed);
             EditorGUILayout.PropertyField(_runSpeed);
+            EditorGUILayout.PropertyField(_runMode);
             EditorGUILayout.PropertyField(_groundMask);
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Mouse Variables", EditorStyles.boldLabel);
