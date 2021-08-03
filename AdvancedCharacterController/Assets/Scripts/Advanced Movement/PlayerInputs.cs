@@ -18,7 +18,13 @@ namespace Advanced_Movement{
         private void Update()
         {
             EightDirMovement();
-            //LookAround();
+            Jump();
+        }
+
+        private void Jump(){
+            if (Input.GetKeyDown(KeyCode.Space)){
+                _movement.Jump();
+            }
         }
 
         private void EightDirMovement()

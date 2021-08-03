@@ -34,13 +34,16 @@ namespace Editor.Advanced_Movement{
 
         #endregion
 
-        #region Gravity Variables
+        #region Gravity And Jump Variables
 
         private SerializedProperty _numberOfGroundCheckPoints;
         private SerializedProperty _radiusOfGroundedCheckPoints;
         private SerializedProperty _groundCheckDistance;
         private SerializedProperty _gravity;
         private SerializedProperty _fallMultiplier;
+        private SerializedProperty _jumpForce;
+        private SerializedProperty _numberOfPossibleJumps;
+        private SerializedProperty _canMoveInAir;
 
         #endregion
 
@@ -67,6 +70,9 @@ namespace Editor.Advanced_Movement{
             _radiusOfGroundedCheckPoints = serializedObject.FindProperty("radiusOfGroundedCheckPoints");
             _gravity = serializedObject.FindProperty("gravity");
             _fallMultiplier = serializedObject.FindProperty("fallMultiplier");
+            _jumpForce = serializedObject.FindProperty("jumpForce");
+            _numberOfPossibleJumps = serializedObject.FindProperty("numberOfPossibleJumps");
+            _canMoveInAir = serializedObject.FindProperty("canMoveInAir");
 
 
             CreateDictionary();
@@ -177,10 +183,8 @@ namespace Editor.Advanced_Movement{
                         case PlayerMovement.Mechanics.Base8DirMovement:
                             Show8DirMovementVariables();
                             break;
-                        case PlayerMovement.Mechanics.Gravity:
-                            ShowGravityVariables();
-                            break;
-                        case PlayerMovement.Mechanics.Jump:
+                        case PlayerMovement.Mechanics.GravityAndJump:
+                            ShowGravityAndJumpVariables();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -197,7 +201,9 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.PropertyField(_runSpeed);
             EditorGUILayout.PropertyField(_runMode);
             EditorGUILayout.PropertyField(_groundMask);
+            
             EditorGUILayout.Space(10);
+            
             EditorGUILayout.LabelField("Mouse Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_invertedX);
             EditorGUILayout.PropertyField(_invertedY);
@@ -212,14 +218,22 @@ namespace Editor.Advanced_Movement{
             _maxLookClamp.floatValue = max;
         }
 
-        private void ShowGravityVariables()
+        private void ShowGravityAndJumpVariables()
         {
+            EditorGUILayout.LabelField("Gravity Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_numberOfGroundCheckPoints);
             EditorGUILayout.PropertyField(_radiusOfGroundedCheckPoints);
             EditorGUILayout.PropertyField(_groundMask);
             EditorGUILayout.PropertyField(_groundCheckDistance);
             EditorGUILayout.PropertyField(_gravity);
             EditorGUILayout.PropertyField(_fallMultiplier);
+            
+            EditorGUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("Jump Variables", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_jumpForce);
+            EditorGUILayout.PropertyField(_numberOfPossibleJumps);
+            EditorGUILayout.PropertyField(_canMoveInAir);
         }
     }
 }

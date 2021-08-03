@@ -13,8 +13,7 @@ namespace Advanced_Movement{
         {
             Nothing = 0,
             Base8DirMovement = 1 << 0,
-            Gravity = 1 << 1,
-            Jump = 1 << 2,
+            GravityAndJump = 1 << 1,
         }
     
         public enum FirstOrThird
@@ -43,6 +42,8 @@ namespace Advanced_Movement{
         public Action<Vector2> OnMouseInput;
         public Action OnRunningInputPressed;
         public Action OnRunningInputReleased;
+
+        public Action OnJumpInputPressed;
         
         #region Perspective Variables
 
@@ -82,7 +83,7 @@ namespace Advanced_Movement{
 
         #endregion
 
-        #region Gravity Variables
+        #region Gravity And Jump Variables
 
         [Range(4, 16)] public int numberOfGroundedCheckPoints = 4;
         public float radiusOfGroundedCheckPoints;
@@ -90,8 +91,9 @@ namespace Advanced_Movement{
         public float gravity = 9.8f;
         public float fallMultiplier = 1.5f;
 
-        private List<Vector3> _gravityCheckersList;
-        private float _fallSpeed = 0;
+        public float jumpForce;
+        [Range(1, 10)] public int numberOfPossibleJumps = 1;
+        public bool canMoveInAir;
 
         #endregion
 
@@ -175,6 +177,10 @@ namespace Advanced_Movement{
         
         public void RunningOff(){
             OnRunningInputReleased?.Invoke();
+        }
+        
+        public void Jump(){
+            OnJumpInputPressed?.Invoke();
         }
 
         #endregion

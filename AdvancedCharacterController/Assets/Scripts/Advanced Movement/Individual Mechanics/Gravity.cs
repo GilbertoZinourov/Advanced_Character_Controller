@@ -4,8 +4,10 @@ using UnityEngine;
 namespace Advanced_Movement.Individual_Mechanics{
     public class Gravity : Mechanic
     {
-        private int _numberOfGroundedCheckPoints;
-        private float _radiusOfGroundedCheckPoints, _groundCheckCastDistance, _gravity, _fallMultiplier;
+        private int _numberOfGroundedCheckPoints, _numberOfPossibleJumps;
+        public float _jumpsRemaining;
+        private float _radiusOfGroundedCheckPoints, _groundCheckCastDistance, _gravity, _fallMultiplier, _jumpForce;
+        private bool _canMoveInAir, _isInAir;
 
         private List<Vector3> _gravityCheckersList;
         private float _fallSpeed = 0;
@@ -16,8 +18,20 @@ namespace Advanced_Movement.Individual_Mechanics{
             CheckGrounded();
         }
 
+        protected override void OnEnable(){
+            base.OnEnable();
+
+            _pm.OnJumpInputPressed += Jump;
+        }
+
+        protected override void OnDisable(){
+            base.OnDisable();
+
+            _pm.OnJumpInputPressed -= Jump;
+        }
+
         protected override void CheckIfEnabled(){
-            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.Gravity.ToString()];
+            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.GravityAndJump.ToString()];
         }
 
         protected override void VariablesSetUp(){
@@ -28,6 +42,12 @@ namespace Advanced_Movement.Individual_Mechanics{
             _fallMultiplier = _pm.fallMultiplier;
 
             _groundMask = _pm.groundMask;
+
+            _numberOfPossibleJumps = _pm.numberOfPossibleJumps;
+            _jumpForce = _pm.jumpForce;
+            _canMoveInAir = _pm.canMoveInAir;
+
+            _jumpsRemaining = _numberOfPossibleJumps;
             
             CreateGravityCheckers();
         }
@@ -53,20 +73,33 @@ namespace Advanced_Movement.Individual_Mechanics{
         
         private void CheckGrounded()
         {
-            foreach (var point in _gravityCheckersList)
-            {
-                Vector3 pointRelativeToPlayer = transform.position + point;
-                if (Physics.Raycast(pointRelativeToPlayer, Vector3.down, _groundCheckCastDistance, _groundMask))
-                {
-                    if (_fallSpeed != 0)
-                    {
+            if (_fallSpeed <= 0){
+                foreach (var point in _gravityCheckersList){
+                    Vector3 pointRelativeToPlayer = transform.position + point;
+                    if (Physics.Raycast(pointRelativeToPlayer, Vector3.down, _groundCheckCastDistance, _groundMask)){
                         _fallSpeed = 0;
+                        _jumpsRemaining = _numberOfPossibleJumps;
+                        _isInAir = false;
+                        return;
                     }
-                    return;
                 }
             }
+
             _fallSpeed -= _gravity * Time.deltaTime;
             _pm.controller.Move(Vector3.up * (_fallSpeed * _fallMultiplier * Time.deltaTime));
+            if (!_isInAir){
+                _jumpsRemaining--;
+                _isInAir = true;
+            }
+        }
+        
+        private void Jump(){
+            if (_jumpsRemaining > 0){
+                _fallSpeed = _jumpForce;
+                if (_isInAir){
+                    _jumpsRemaining--;
+                }
+            }
         }
         
         #endregion
