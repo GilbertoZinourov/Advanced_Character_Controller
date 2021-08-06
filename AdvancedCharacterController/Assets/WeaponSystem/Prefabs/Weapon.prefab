@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4250188043740847105}
   m_Layer: 0
-  m_Name: SputoPoint
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -171,7 +171,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 2813009161491893409, guid: 3483e429855e3844faaa60f8b29cac39, type: 3}
-  sputoPoint: {fileID: 4250188043740847105}
+  firePoint: {fileID: 4250188043740847105}
+  showBouncingPreview: 0
+  showExplosivePreview: 1
+  projectile: {fileID: 331735927457176392, guid: 3483e429855e3844faaa60f8b29cac39, type: 3}
 --- !u!1 &6515039304179990837
 GameObject:
   m_ObjectHideFlags: 0

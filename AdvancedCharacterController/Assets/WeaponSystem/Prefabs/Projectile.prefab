@@ -97,6 +97,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileSettings: {fileID: 11400000, guid: 3099943170f21c143aa8ea9e707fbe1e, type: 2}
+  settings:
+    movementType: 0
+    behaviourTypes: 02000000
+    movementSettings: {fileID: 11400000, guid: cff287621cb720a478c7d01ded319746, type: 2}
+    bouncingSettings: {fileID: 11400000, guid: fb8e60f4c09284048ac21b94b50337a6, type: 2}
+    explosiveSettings: {fileID: 11400000, guid: 236f027d41a58bc4fbe6a183e02878ce, type: 2}
 --- !u!135 &-5341028089776954419
 SphereCollider:
   m_ObjectHideFlags: 0
