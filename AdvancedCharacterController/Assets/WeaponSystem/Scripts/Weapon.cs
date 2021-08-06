@@ -2,50 +2,46 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 
 
 
 namespace Advanced_Weapon_System {
-	
-	public enum ProjectileBehavior{Normal,Bouncing,Explosive}
-	public enum ProjectileMovement{Straight,Aiming,GravityAffected}
-	public enum ProjectileSpeed{Normal,Graphical}
-	
-	
+
+
 	public class Weapon : MonoBehaviour {
 		public GameObject projectilePrefab;
+		public GameObject projectileInstance;
 		public Transform firePoint;
 
 		public bool showBouncingPreview = false;
-		
-		private Projectile projectile;
+		public bool showExplosivePreview = false;
+		public Projectile projectile;
 		
 		private void Start() {
-			projectilePrefab=Instantiate(projectilePrefab, firePoint.transform.position, transform.rotation,transform);
-			projectile = projectilePrefab.GetComponent<Projectile>();
+			//projectileInstance=(GameObject)PrefabUtility.InstantiatePrefab(projectilePrefab, transform);
+			projectileInstance=Instantiate(projectilePrefab, firePoint.transform.position, transform.rotation,transform);
+			projectile = projectileInstance.GetComponent<Projectile>();
 			projectile.AddBehaviours();
 		}
 
 		private void Update() {
 			if (Input.GetButtonDown("Fire1")) {
-				var obj=Instantiate(projectilePrefab, firePoint.transform.position, transform.rotation);
+				var obj=Instantiate(projectileInstance, firePoint.transform.position, transform.rotation);
 				obj.SetActive(true);
 			}
 		}
-		
-		public int maxReflectionCount = 5;
-		public float maxStepDistance = 200;
 
 		void OnDrawGizmos()
 		{
 			if (showBouncingPreview) {
 				Handles.color = Color.red;
-				Handles.ArrowHandleCap(0, transform.position + transform.forward * 0.25f, transform.rotation, 0.5f, EventType.Repaint);
-				Gizmos.color = Color.red;
-				Gizmos.DrawWireSphere(transform.position, 0.25f);
+				Handles.ArrowHandleCap(0, transform.position + transform.forward * 0.25f, transform.rotation, 0.25f, EventType.Repaint);
 
-				DrawPredictedReflectionPattern(transform.position + transform.forward * 0.75f, transform.forward, maxReflectionCount);
+				DrawPredictedReflectionPattern(transform.position + transform.forward * 0.5f, transform.forward, projectile.settings.bouncingSettings.maxReflectionCount);
+			}else if (showExplosivePreview) {
+				DrawPredictedExplosivePattern(transform.position + transform.forward * 0.5f,transform.forward);
 			}
 		}
 
@@ -59,20 +55,42 @@ namespace Advanced_Weapon_System {
 
 			Ray ray = new Ray(position, direction);
 			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit, maxStepDistance))
+			if (Physics.Raycast(ray, out hit, projectile.settings.bouncingSettings.maxStepDistance))
 			{
 				direction = Vector3.Reflect(direction, hit.normal);
 				position = hit.point;
 			}
 			else
 			{
-				position += direction * maxStepDistance;
+				position += direction * projectile.settings.bouncingSettings.maxStepDistance;
 			}
-
-			Gizmos.color = Color.yellow;
+			
+			if (showExplosivePreview) {
+				DrawPredictedExplosivePattern(position, direction);
+			}
+			Gizmos.color = Color.green;
 			Gizmos.DrawLine(startingPosition, position);
-
 			DrawPredictedReflectionPattern(position, direction, reflectionsRemaining - 1);
+		}
+
+		private void DrawPredictedExplosivePattern(Vector3 position, Vector3 direction) {
+			Vector3 startingPosition = position;
+
+			Ray ray = new Ray(position, direction);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit))
+			{
+				position = hit.point;
+				Gizmos.color = Color.red;
+				Gizmos.DrawWireSphere(position,projectile.settings.explosiveSettings.smallRadius);
+				Gizmos.color = Color.yellow;
+				Gizmos.DrawWireSphere(position,projectile.settings.explosiveSettings.bigRadius);
+				Gizmos.DrawLine(startingPosition, position);
+			}
+			else {
+				Gizmos.color = Color.yellow;
+				Gizmos.DrawLine(position, direction*1000);
+			}
 		}
 	}
 

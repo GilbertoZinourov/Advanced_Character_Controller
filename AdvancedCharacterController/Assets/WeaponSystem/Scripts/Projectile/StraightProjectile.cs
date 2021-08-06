@@ -11,7 +11,7 @@ namespace Advanced_Weapon_System {
 
 		private void Move() {
 			Dir = transform.forward;
-			transform.position += Dir * GetSpeed();
+			transform.position += Dir * Speed;
 		}
 
 	}

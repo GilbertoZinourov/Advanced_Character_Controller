@@ -10,24 +10,32 @@ namespace Advanced_Weapon_System {
 	public class Projectile : MonoBehaviour {
 		public ProjectileSettings projectileSettings;
 		public Settings settings;
-		private Rigidbody rigidbody;
+		private Rigidbody rb;
 
-		private MovementProjectile movementComponent;
+		[SerializeField]private MovementProjectile movementComponent;
 		private List<BehaviourProjectile> behaviourComponents=new List<BehaviourProjectile>();
+
+		public event Action<Collision> Hit;
+
+		[SerializeField]private bool destroyOnFirstHit=true;
+		[SerializeField]private float delayedDestruction=0;
 		
 		private float timer=0;
 		public float Timer => timer;
 
+		private void Awake() {
+			Init();
+		}
+
 		private void OnEnable() {
-			timer = 0;
-			settings = projectileSettings.settings;
+			Init();
 		}
 
 		private void Update() {
 			timer += Time.deltaTime;
-			//Da scommentare questa riga quando si farà un input di powerup
+			//Da togliere questa riga quando si farà un input di powerup
 			settings = projectileSettings.settings;
-			if (timer > settings.LifeTime) {
+			if (timer > settings.movementSettings.lifeTime) {
 				Destroy(gameObject);
 			}
 		}
@@ -35,8 +43,33 @@ namespace Advanced_Weapon_System {
 		private void OnBecameInvisible() {
 			Destroy(gameObject);
 		}
+
+		private void OnCollisionEnter(Collision other) {
+			Debug.Log("Hit");
+			Hit?.Invoke(other);
+			if (destroyOnFirstHit) {
+				StartCoroutine(DestroyProjectile());
+			}
+		}
+
+		public IEnumerator DestroyProjectile() {
+			float timer = 0;
+			while (timer < delayedDestruction) {
+				movementComponent.StopProjectile();
+				timer += Time.deltaTime;
+				yield return null;
+			}
+			Destroy(gameObject);
+		}
+		
+		private void Init() {
+			timer = 0;
+			settings = projectileSettings.settings;
+			rb ??= GetComponent<Rigidbody>();
+		}
 		
 		public void AddBehaviours() {
+			Init();
 			movementComponent = null;
 			behaviourComponents.Clear();
 			AddMovementBehaviour();
@@ -44,7 +77,7 @@ namespace Advanced_Weapon_System {
 		}
 
 		private void AddMovementBehaviour() {
-			switch(settings.MovementType)
+			switch(settings.movementType)
 			{
 				case MovementType.Straight:
 					InitializeMovementComponent<StraightProjectile>();
@@ -63,19 +96,22 @@ namespace Advanced_Weapon_System {
 
 		private void InitializeMovementComponent<T>() where T : MovementProjectile {
 			movementComponent = gameObject.AddComponent<T>();
-			movementComponent.InitializeComponent(this,settings);
+			movementComponent.InitializeComponent(this);
 		}
 
 		private void AddProjectileBehaviours() {
-			foreach (BeahviourType projectileSettingsBeahviourType in settings.BeahviourTypes) {
+			foreach (BehaviourType projectileSettingsBeahviourType in settings.behaviourTypes) {
 				switch (projectileSettingsBeahviourType) {
-					case BeahviourType.Normal:
+					case BehaviourType.Normal:
 						InitializeBehaviourComponent<NormalProjectile>();
 						break;
-					case BeahviourType.Bouncing:
+					case BehaviourType.Bouncing:
+						destroyOnFirstHit = false;
 						InitializeBehaviourComponent<BouncingProjectile>();
 						break;
-					case BeahviourType.Explosive:
+					case BehaviourType.Explosive:
+						delayedDestruction += settings.explosiveSettings.explosionDelay;
+						delayedDestruction += settings.explosiveSettings.explosionDuration;
 						InitializeBehaviourComponent<ExplosiveProjectile>();
 						break;
 					default:
@@ -87,19 +123,19 @@ namespace Advanced_Weapon_System {
 
 		private void InitializeBehaviourComponent<T>() where T : BehaviourProjectile {
 			var behaviourComponent = gameObject.AddComponent<T>();
-			behaviourComponent.InitializeComponent(this,settings);
+			behaviourComponent.InitializeComponent(this);
 			behaviourComponents.Add(behaviourComponent);
 		}
 		
-		public void RemoveProjectBehaviour(BeahviourType behaviourToRemove) {
+		public void RemoveProjectBehaviour(BehaviourType behaviourToRemove) {
 			switch (behaviourToRemove) {
-				case BeahviourType.Normal:
+				case BehaviourType.Normal:
 					
 					break;
-				case BeahviourType.Bouncing:
+				case BehaviourType.Bouncing:
 					
 					break;
-				case BeahviourType.Explosive:
+				case BehaviourType.Explosive:
 					
 					break;
 				default:

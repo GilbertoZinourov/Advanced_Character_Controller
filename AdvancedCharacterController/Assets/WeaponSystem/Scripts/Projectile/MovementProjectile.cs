@@ -5,28 +5,45 @@ namespace Advanced_Weapon_System {
 
 	public class MovementProjectile : ProjectileComponent {
 		protected Rigidbody rigidbody=default;
+		
 		protected float speed;
 		public float Speed {
 			get {
-				speed = GetSpeed();
-				return speed;
+				if (isStopped) {
+					return 0;
+				}
+				else {
+					return GetSpeed();
+				}
+			}
+			set {
+				speed = value;
 			}
 		}
 
-		protected Vector3 dir;
 		public Vector3 Dir {
-			get => dir;
-			set => dir = value;
+			get {
+				if (isStopped) {
+					return Vector3.zero;
+				}
+				else {
+					return transform.forward;
+				}
+			}
+			set => transform.forward = value;
 		}
 
-		public virtual void Update() {
-			speed=GetSpeed();
-		}
-
+		protected bool isStopped;
+		
 		protected float GetSpeed() {
-			return settings.Graphic.Evaluate(projectile.Timer);
+			return projectile.settings.movementSettings.graphic.Evaluate(projectile.Timer);
 		}
 
+		public void StopProjectile() {
+			isStopped = true;
+			Debug.Log("Projectile stopped");
+		}
+		
 	}
 
 }
