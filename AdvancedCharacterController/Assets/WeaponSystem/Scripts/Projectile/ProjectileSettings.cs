@@ -1,24 +1,22 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Advanced_Weapon_System {
-	
-	public enum BeahviourType{Normal,Bouncing,Explosive}
+	public enum BehaviourType{Normal,Bouncing,Explosive}
 	public enum MovementType{Straight,Aiming,Gravity}
 
+	[Serializable]
 	public class Settings {
-		[SerializeField] private MovementType movementType;
-		[SerializeField] private List<BeahviourType> beahviourTypes;
-		[SerializeField] private AnimationCurve graphic;
-		[SerializeField] private float lifeTime;
-		public MovementType MovementType => movementType;
-		public List<BeahviourType> BeahviourTypes => beahviourTypes;
-		public AnimationCurve Graphic => graphic;
-		public float LifeTime => lifeTime;
+		public MovementType movementType;
+		public List<BehaviourType> behaviourTypes;
+		[Header("MovmentSettings")] 
+		public MovementSettings movementSettings;
+		[Header("BehaviourSettings")] 
+		public BouncingSettings bouncingSettings;
+		public ExplosiveSettings explosiveSettings;
 	}
+	
 	[CreateAssetMenu(menuName = "Data/Settings/ProjectileSettings")]
 	public class ProjectileSettings : ScriptableObject {
 		public Settings settings;

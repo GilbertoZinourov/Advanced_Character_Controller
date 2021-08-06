@@ -9,6 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 596cc72778bdcda47a296870b026a938, type: 3}
-  m_Name: normal
+  m_Script: {fileID: 11500000, guid: 277f998621be4f65b1990e489e1b1880, type: 3}
+  m_Name: default_bouncing_settings 1
   m_EditorClassIdentifier: 
+  maxReflectionCount: 5
+  maxStepDistance: 200
