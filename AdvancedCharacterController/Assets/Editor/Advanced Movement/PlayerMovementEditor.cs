@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Advanced_Movement;
 using UnityEditor;
 
-namespace Advanced_Movement{
+namespace Editor.Advanced_Movement{
     [CustomEditor(typeof(PlayerMovement))]
     public class PlayerMovementEditor : UnityEditor.Editor
     {
@@ -29,16 +30,20 @@ namespace Advanced_Movement{
         private SerializedProperty _minLookClamp;
         private SerializedProperty _maxLookClamp;
         private SerializedProperty _groundMask;
+        private SerializedProperty _runMode;
 
         #endregion
 
-        #region Gravity Variables
+        #region Gravity And Jump Variables
 
         private SerializedProperty _numberOfGroundCheckPoints;
         private SerializedProperty _radiusOfGroundedCheckPoints;
         private SerializedProperty _groundCheckDistance;
         private SerializedProperty _gravity;
         private SerializedProperty _fallMultiplier;
+        private SerializedProperty _jumpForce;
+        private SerializedProperty _numberOfPossibleJumps;
+        private SerializedProperty _canMoveInAir;
 
         #endregion
 
@@ -59,11 +64,15 @@ namespace Advanced_Movement{
             _minLookClamp = serializedObject.FindProperty("minVerticalLookClampValue");
             _maxLookClamp = serializedObject.FindProperty("maxVerticalLookClampValue");
             _groundMask = serializedObject.FindProperty("groundMask");
+            _runMode = serializedObject.FindProperty("runMode");
             _groundCheckDistance = serializedObject.FindProperty("groundCheckCastDistance");
             _numberOfGroundCheckPoints = serializedObject.FindProperty("numberOfGroundedCheckPoints");
             _radiusOfGroundedCheckPoints = serializedObject.FindProperty("radiusOfGroundedCheckPoints");
             _gravity = serializedObject.FindProperty("gravity");
             _fallMultiplier = serializedObject.FindProperty("fallMultiplier");
+            _jumpForce = serializedObject.FindProperty("jumpForce");
+            _numberOfPossibleJumps = serializedObject.FindProperty("numberOfPossibleJumps");
+            _canMoveInAir = serializedObject.FindProperty("canMoveInAir");
 
 
             CreateDictionary();
@@ -99,6 +108,7 @@ namespace Advanced_Movement{
 
             EditorGUILayout.PropertyField(_desiredPerspective);
 
+            EditorGUI.indentLevel++;
             switch (_playerMovement.desiredPerspective)
             {
                 case PlayerMovement.FirstOrThird.First:
@@ -120,6 +130,7 @@ namespace Advanced_Movement{
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            EditorGUI.indentLevel--;
 
             #endregion
             EditorGUILayout.Space(25);
@@ -163,8 +174,8 @@ namespace Advanced_Movement{
                 
                 _foldoutsDictionary[flagString] = EditorGUILayout.Foldout(_foldoutsDictionary[flagString], flag.ToString());
                 
-                if (_foldoutsDictionary[flagString])
-                {
+                if (_foldoutsDictionary[flagString]){
+                    EditorGUI.indentLevel++;
                     switch(flag)
                     {
                         case PlayerMovement.Mechanics.Nothing:
@@ -172,14 +183,13 @@ namespace Advanced_Movement{
                         case PlayerMovement.Mechanics.Base8DirMovement:
                             Show8DirMovementVariables();
                             break;
-                        case PlayerMovement.Mechanics.Gravity:
-                            ShowGravityVariables();
-                            break;
-                        case PlayerMovement.Mechanics.Jump:
+                        case PlayerMovement.Mechanics.GravityAndJump:
+                            ShowGravityAndJumpVariables();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+                    EditorGUI.indentLevel--;
                 }
             }
         }
@@ -189,8 +199,11 @@ namespace Advanced_Movement{
             EditorGUILayout.LabelField("Movement Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_walkSpeed);
             EditorGUILayout.PropertyField(_runSpeed);
+            EditorGUILayout.PropertyField(_runMode);
             EditorGUILayout.PropertyField(_groundMask);
+            
             EditorGUILayout.Space(10);
+            
             EditorGUILayout.LabelField("Mouse Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_invertedX);
             EditorGUILayout.PropertyField(_invertedY);
@@ -205,14 +218,22 @@ namespace Advanced_Movement{
             _maxLookClamp.floatValue = max;
         }
 
-        private void ShowGravityVariables()
+        private void ShowGravityAndJumpVariables()
         {
+            EditorGUILayout.LabelField("Gravity Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_numberOfGroundCheckPoints);
             EditorGUILayout.PropertyField(_radiusOfGroundedCheckPoints);
             EditorGUILayout.PropertyField(_groundMask);
             EditorGUILayout.PropertyField(_groundCheckDistance);
             EditorGUILayout.PropertyField(_gravity);
             EditorGUILayout.PropertyField(_fallMultiplier);
+            
+            EditorGUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("Jump Variables", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_jumpForce);
+            EditorGUILayout.PropertyField(_numberOfPossibleJumps);
+            EditorGUILayout.PropertyField(_canMoveInAir);
         }
     }
 }

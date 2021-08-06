@@ -17,14 +17,27 @@ namespace Advanced_Movement{
 
         private void Update()
         {
-            MovePlayer();
-            LookAround();
+            EightDirMovement();
+            Jump();
         }
 
-        private void MovePlayer()
+        private void Jump(){
+            if (Input.GetKeyDown(KeyCode.Space)){
+                _movement.Jump();
+            }
+        }
+
+        private void EightDirMovement()
         {
             GetWASDInput();
-            _movement.Move(_inputWASD.normalized, _isRunningInputPressed);
+            _movement.Move(_inputWASD);
+
+            if (Input.GetKeyDown(KeyCode.LeftShift)){
+                _movement.Running();
+            }
+            
+            GetMouseInput();
+            LookAround();
         }
 
         private void GetWASDInput()
@@ -43,9 +56,9 @@ namespace Advanced_Movement{
         private void LookAround()
         {
             GetMouseInput();
-            _movement.LookAround(_inputMouse);
+            _movement.Rotate(_inputMouse);
         }
-
+        
         private void GetMouseInput()
         {
             _inputMouse = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
