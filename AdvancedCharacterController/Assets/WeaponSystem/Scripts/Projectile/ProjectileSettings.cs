@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Advanced_Weapon_System {
 
-	[Serializable]
-	public class ProjectileSettings {
+	[CreateAssetMenu(menuName = "Data/Settings/ProjectileSettings")]
+	public class ProjectileSettings: ScriptableObject {
 		public MovementType movementType;
 		public List<BehaviourType> behaviourTypes;
 		[Header("MovmentSettings")] 
@@ -14,6 +14,8 @@ namespace Advanced_Weapon_System {
 		public BouncingSettings bouncingSettings;
 		public ExplosiveSettings explosiveSettings;
 
+		public float bulletDamage;
+		
 		public PhysicMaterial gravityMaterial;
 		public PhysicMaterial gravityBouncingMaterial;
 		

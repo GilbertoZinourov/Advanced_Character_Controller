@@ -9,11 +9,10 @@ namespace Advanced_Weapon_System {
 
 	public class Projectile : MonoBehaviour {
 		public ProjectileSettings projectileSettings;
-		public Settings settings;
 		public Rigidbody rb;
 		public Collider collider;
 
-		public MovementProjectile movementComponent;
+		[HideInInspector] public MovementProjectile movementComponent;
 		private List<BehaviourProjectile> behaviourComponents=new List<BehaviourProjectile>();
 
 		public event Action<Collision> Hit;
@@ -28,7 +27,6 @@ namespace Advanced_Weapon_System {
 
 		private void Init() {
 			timer = 0;
-			settings = projectileSettings.settings;
 			rb ??= GetComponent<Rigidbody>();
 			collider ??= GetComponent<Collider>();
 		}
@@ -36,8 +34,7 @@ namespace Advanced_Weapon_System {
 		private void Update() {
 			timer += Time.deltaTime;
 			//Da togliere questa riga quando si farà un input di powerup
-			settings = projectileSettings.settings;
-			if (timer > settings.movementSettings.lifeTime) {
+			if (timer > projectileSettings.movementSettings.lifeTime) {
 				DestroyProjectile(true);
 			}
 		}
@@ -85,7 +82,7 @@ namespace Advanced_Weapon_System {
 		}
 
 		private void AddMovementBehaviour() {
-			switch(settings.movementType)
+			switch(projectileSettings.movementType)
 			{
 				case MovementType.Straight:
 					InitializeMovementComponent<StraightProjectile>();
@@ -95,10 +92,10 @@ namespace Advanced_Weapon_System {
 					break;
 				case MovementType.Gravity:
 					if (hasBouncingComponent) {
-						collider.material = settings.gravityBouncingMaterial;
+						collider.material = projectileSettings.gravityBouncingMaterial;
 					}
 					else {
-						collider.material = settings.gravityMaterial;
+						collider.material = projectileSettings.gravityMaterial;
 					}
 					rb.useGravity = true;
 					InitializeMovementComponent<GravityProjectile>();
@@ -118,7 +115,7 @@ namespace Advanced_Weapon_System {
 		}
 
 		private void AddProjectileBehaviours() {
-			foreach (BehaviourType projectileSettingsBeahviourType in settings.behaviourTypes) {
+			foreach (BehaviourType projectileSettingsBeahviourType in projectileSettings.behaviourTypes) {
 				switch (projectileSettingsBeahviourType) {
 					case BehaviourType.Normal:
 						InitializeBehaviourComponent<NormalProjectile>();
@@ -129,8 +126,8 @@ namespace Advanced_Weapon_System {
 						InitializeBehaviourComponent<BouncingProjectile>();
 						break;
 					case BehaviourType.Explosive:
-						delayedDestruction += settings.explosiveSettings.explosionDelay;
-						delayedDestruction += settings.explosiveSettings.explosionDuration;
+						delayedDestruction += projectileSettings.explosiveSettings.explosionDelay;
+						delayedDestruction += projectileSettings.explosiveSettings.explosionDuration;
 						InitializeBehaviourComponent<ExplosiveProjectile>();
 						break;
 					default:

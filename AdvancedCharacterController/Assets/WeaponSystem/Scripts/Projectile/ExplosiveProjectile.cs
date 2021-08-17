@@ -7,7 +7,7 @@ namespace Advanced_Weapon_System {
 	public class ExplosiveProjectile : BehaviourProjectile {
 
 		public override void Init() {
-			if (projectile.settings.explosiveSettings.explodeOnHit) {
+			if (projectile.projectileSettings.explosiveSettings.explodeOnHit) {
 				projectile.Hit += OnHit;
 			}
 			else {
@@ -22,7 +22,7 @@ namespace Advanced_Weapon_System {
 
 		private IEnumerator DelayedExplosion(bool shouldDestroyProjectile=false) {
 			float timer = 0;
-			while (timer < projectile.settings.explosiveSettings.explosionDelay) {
+			while (timer < projectile.projectileSettings.explosiveSettings.explosionDelay) {
 				timer += Time.deltaTime;
 				yield return null;
 			}
@@ -39,16 +39,16 @@ namespace Advanced_Weapon_System {
 			GameObject explosionObject;
 			float timer = 0;
 			Debug.Log("Explode");
-			if (projectile.settings.explosiveSettings.movementExplosion) {
+			if (projectile.projectileSettings.explosiveSettings.movementExplosion) {
 				//explosionObject = Instantiate(projectile.settings.explosiveSettings.explosivePrefab,transform.position,transform.rotation,transform);
-				explosionObject = Instantiate(projectile.settings.explosiveSettings.explosivePrefab,transform.position,transform.rotation);
+				explosionObject = Instantiate(projectile.projectileSettings.explosiveSettings.explosivePrefab,transform.position,transform.rotation);
 			}
 			else {
-				explosionObject = Instantiate(projectile.settings.explosiveSettings.explosivePrefab,transform.position,transform.rotation);
+				explosionObject = Instantiate(projectile.projectileSettings.explosiveSettings.explosivePrefab,transform.position,transform.rotation);
 			}
 			
-			explosionObject.GetComponent<Explosion>()?.SetExplosion(projectile.settings.explosiveSettings.smallRadius,projectile.settings.explosiveSettings.bigRadius);
-			while (timer < projectile.settings.explosiveSettings.explosionDuration) {
+			explosionObject.GetComponent<Explosion>()?.SetExplosion(projectile.projectileSettings.explosiveSettings.smallRadius,projectile.projectileSettings.explosiveSettings.bigRadius);
+			while (timer < projectile.projectileSettings.explosiveSettings.explosionDuration) {
 				//sphereCast
 				timer += Time.deltaTime;
 				yield return null;

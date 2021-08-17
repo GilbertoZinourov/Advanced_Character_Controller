@@ -11,14 +11,14 @@ namespace Advanced_Weapon_System {
 
 		public override void Init() {
 			projectile.Hit += OnHit;
-			maxBounce = projectile.settings.bouncingSettings.maxReflectionCount;
+			maxBounce = projectile.projectileSettings.bouncingSettings.maxReflectionCount;
 			currentBounce = maxBounce;
 		}
 
 		private void OnHit(Collision other) {
 			Debug.Log("Bouncing");
 			if (currentBounce > 0) {
-				if (projectile.collider.material != projectile.settings.gravityBouncingMaterial) {
+				if (projectile.collider.material != projectile.projectileSettings.gravityBouncingMaterial) {
 					projectile.movementComponent.Dir = Vector3.Reflect(transform.forward, other.contacts[0].normal);
 				}
 				currentBounce--;
@@ -49,14 +49,14 @@ namespace Advanced_Weapon_System {
 		
 			Ray ray = new Ray(position, direction);
 			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit, projectile.settings.bouncingSettings.maxStepDistance))
+			if (Physics.Raycast(ray, out hit, projectile.projectileSettings.bouncingSettings.maxStepDistance))
 			{
 				direction = Vector3.Reflect(direction, hit.normal);
 				position = hit.point;
 			}
 			else
 			{
-				position += direction * projectile.settings.bouncingSettings.maxStepDistance;
+				position += direction * projectile.projectileSettings.bouncingSettings.maxStepDistance;
 			}
 		
 			Gizmos.color = Color.yellow;

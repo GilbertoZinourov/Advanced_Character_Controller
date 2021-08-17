@@ -39,7 +39,7 @@ namespace Advanced_Weapon_System {
 		protected bool isStopped;
 		
 		protected float GetSpeed() {
-			return projectile.settings.movementSettings.graphic.Evaluate(projectile.Timer);
+			return projectile.projectileSettings.movementSettings.graphic.Evaluate(projectile.Timer);
 		}
 
 		public void StopProjectile() {
