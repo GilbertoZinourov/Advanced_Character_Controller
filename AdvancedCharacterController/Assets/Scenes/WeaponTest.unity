@@ -1210,6 +1210,10 @@ PrefabInstance:
       value: 1.14
       objectReference: {fileID: 0}
     - target: {fileID: 8401432827413169232, guid: 442d5b31e104ea946ad7c4e907b47f94, type: 3}
+      propertyPath: weaponSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: bf7534dca15f29b469e647202073e6e8, type: 2}
+    - target: {fileID: 8401432827413169232, guid: 442d5b31e104ea946ad7c4e907b47f94, type: 3}
       propertyPath: showBouncingPreview
       value: 1
       objectReference: {fileID: 0}

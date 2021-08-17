@@ -96,15 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0926f7f9f709ad643b44bd069ecc8928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileSettings: {fileID: 11400000, guid: 3099943170f21c143aa8ea9e707fbe1e, type: 2}
-  settings:
-    movementType: 0
-    behaviourTypes: 02000000
-    movementSettings: {fileID: 11400000, guid: cff287621cb720a478c7d01ded319746, type: 2}
-    bouncingSettings: {fileID: 11400000, guid: fb8e60f4c09284048ac21b94b50337a6, type: 2}
-    explosiveSettings: {fileID: 11400000, guid: 236f027d41a58bc4fbe6a183e02878ce, type: 2}
-    gravityMaterial: {fileID: 13400000, guid: f7893796df2d7e14aa081235890028f0, type: 2}
-    gravityBouncingMaterial: {fileID: 13400000, guid: f95996ff9d61a024ebdd244c5eee26da, type: 2}
+  projectileSettings: {fileID: 11400000, guid: 0aece92293003714bbd16c5e27506a1f, type: 2}
   rb: {fileID: -5449109869787678450}
   collider: {fileID: -5341028089776954419}
   movementComponent: {fileID: 0}
