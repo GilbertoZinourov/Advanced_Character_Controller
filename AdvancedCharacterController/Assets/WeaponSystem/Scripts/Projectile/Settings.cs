@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Advanced_Weapon_System {
+	public enum BehaviourType{Normal,Bouncing,Explosive}
+	public enum MovementType{Straight,Aiming,Gravity}
 
 	[Serializable]
 	public class ProjectileSettings {
@@ -17,6 +19,12 @@ namespace Advanced_Weapon_System {
 		public PhysicMaterial gravityMaterial;
 		public PhysicMaterial gravityBouncingMaterial;
 		
+	}
+	
+	[CreateAssetMenu(menuName = "Data/Settings/ProjectileSettings")]
+	public class Settings : ScriptableObject {
+		public ProjectileSettings projectileSettings;
+		public WeaponSettings weaponSettings;
 	}
 
 }
