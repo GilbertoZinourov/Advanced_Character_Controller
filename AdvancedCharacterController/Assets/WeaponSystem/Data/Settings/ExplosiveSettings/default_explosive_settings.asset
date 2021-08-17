@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f84cadcb29b4132a7b7862dd854e94c, type: 3}
   m_Name: default_explosive_settings
   m_EditorClassIdentifier: 
-  smallRadius: 1
+  smallRadius: 2
   smallRadiusDamage: 3
-  bigRadius: 3
+  bigRadius: 5
   bigRadiusDamage: 1
+  explosivePrefab: {fileID: 7962941108600117672, guid: 04ac75311f2b27a4ea086767abf497aa, type: 3}
   explosionDelay: 1
   explosionDuration: 3
+  explodeOnHit: 1
+  movementExplosion: 0
