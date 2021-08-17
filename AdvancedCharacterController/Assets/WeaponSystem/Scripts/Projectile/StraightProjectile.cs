@@ -5,6 +5,9 @@ namespace Advanced_Weapon_System {
 	
 	public class StraightProjectile : MovementProjectile {
 
+		public override void Init() {
+			
+		}
 		private void FixedUpdate() {
 			Move();
 		}

@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace Advanced_Weapon_System {
 
-	public class MovementProjectile : ProjectileComponent {
-		protected Rigidbody rigidbody=default;
-		
+	public abstract class MovementProjectile : ProjectileComponent {
 		protected float speed;
 		public float Speed {
 			get {
@@ -30,8 +28,13 @@ namespace Advanced_Weapon_System {
 					return transform.forward;
 				}
 			}
-			set => transform.forward = value;
+			set {
+				transform.forward = value;
+				oldForward = value;
+			} 
 		}
+		
+		public Vector3 oldForward;
 
 		protected bool isStopped;
 		
@@ -43,7 +46,6 @@ namespace Advanced_Weapon_System {
 			isStopped = true;
 			Debug.Log("Projectile stopped");
 		}
-		
 	}
 
 }

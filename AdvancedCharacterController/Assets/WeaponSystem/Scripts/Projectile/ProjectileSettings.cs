@@ -15,6 +15,10 @@ namespace Advanced_Weapon_System {
 		[Header("BehaviourSettings")] 
 		public BouncingSettings bouncingSettings;
 		public ExplosiveSettings explosiveSettings;
+
+		public PhysicMaterial gravityMaterial;
+		public PhysicMaterial gravityBouncingMaterial;
+		
 	}
 	
 	[CreateAssetMenu(menuName = "Data/Settings/ProjectileSettings")]

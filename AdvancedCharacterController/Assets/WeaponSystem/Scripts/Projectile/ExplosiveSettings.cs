@@ -9,8 +9,12 @@ namespace Advanced_Weapon_System {
 		public float bigRadius;
 		public float bigRadiusDamage;
 
+		public GameObject explosivePrefab;
+		
 		public float explosionDelay;
 		public float explosionDuration;
+		public bool explodeOnHit;
+		public bool movementExplosion;
 	}
 
 }

@@ -4,7 +4,10 @@ using UnityEngine;
 namespace Advanced_Weapon_System {
 
 	public class NormalProjectile: BehaviourProjectile {
-		
+
+		public override void Init() {
+			
+		}
 	}
 
 }
