@@ -103,6 +103,14 @@ MonoBehaviour:
     movementSettings: {fileID: 11400000, guid: cff287621cb720a478c7d01ded319746, type: 2}
     bouncingSettings: {fileID: 11400000, guid: fb8e60f4c09284048ac21b94b50337a6, type: 2}
     explosiveSettings: {fileID: 11400000, guid: 236f027d41a58bc4fbe6a183e02878ce, type: 2}
+    gravityMaterial: {fileID: 13400000, guid: f7893796df2d7e14aa081235890028f0, type: 2}
+    gravityBouncingMaterial: {fileID: 13400000, guid: f95996ff9d61a024ebdd244c5eee26da, type: 2}
+  rb: {fileID: -5449109869787678450}
+  collider: {fileID: -5341028089776954419}
+  movementComponent: {fileID: 0}
+  destroyOnFirstHit: 1
+  delayedDestruction: 0
+  hasBouncingComponent: 0
 --- !u!135 &-5341028089776954419
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -130,5 +138,5 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Constraints: 112
+  m_CollisionDetection: 2
