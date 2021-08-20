@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Advanced_Movement{
     public class PlayerMovement : MonoBehaviour
@@ -27,10 +26,11 @@ namespace Advanced_Movement{
             Idle,
             Walking,
             Running,
-            Falling,
+            Sliding,
+            InAir,
         }
 
-        public enum RunMode{
+        public enum PressMode{
             Toggle,
             Hold
         }
@@ -42,7 +42,9 @@ namespace Advanced_Movement{
         public Action<Vector2> OnMouseInput;
         public Action OnRunningInputPressed;
         public Action OnRunningInputReleased;
-
+        public Action OnCrouchInputPressed;
+        public Action OnCrouchInputReleased;
+        
         public Action OnJumpInputPressed;
         
         #region Perspective Variables
@@ -79,7 +81,18 @@ namespace Advanced_Movement{
         public float minVerticalLookClampValue = -90;
         public float maxVerticalLookClampValue = 90;
         public LayerMask groundMask;
-        public RunMode runMode;
+        public PressMode runMode;
+        
+        public bool canCrouch, canSlide;
+        public PressMode crouchMode;
+        public float crouchTime, slideTime;
+
+        private Vector3 _movementDirection;
+        
+        public Vector3 MovementDirection{
+            get => _movementDirection;
+            set => _movementDirection = value;
+        }
 
         #endregion
 
@@ -179,24 +192,32 @@ namespace Advanced_Movement{
             OnRunningInputReleased?.Invoke();
         }
         
+        public void Crouching(){
+            OnCrouchInputPressed?.Invoke();
+        }
+        
+        public void CrouchingOff(){
+            OnCrouchInputReleased?.Invoke();
+        }
+        
         public void Jump(){
             OnJumpInputPressed?.Invoke();
         }
 
         #endregion
         
-        // 
-        //
-        // #region PlayerStates
-        //
-        // private void ChangePlayerState(PlayerStates state)
-        // {
-        //     if (currentState == state) return;
-        //     currentState = state;
-        // }
-        //
-        // #endregion
-        //
+        
+        
+        #region PlayerStates
+        
+        public void ChangePlayerState(PlayerStates state)
+        {
+            if (currentState == state) return;
+            currentState = state;
+        }
+        
+        #endregion
+        
         #region Gizmos
         
         private void OnDrawGizmosSelected()

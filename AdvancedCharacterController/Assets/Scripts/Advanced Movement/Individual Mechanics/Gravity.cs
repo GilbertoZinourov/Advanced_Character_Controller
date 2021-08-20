@@ -7,7 +7,8 @@ namespace Advanced_Movement.Individual_Mechanics{
         private int _numberOfGroundedCheckPoints, _numberOfPossibleJumps;
         public float _jumpsRemaining;
         private float _radiusOfGroundedCheckPoints, _groundCheckCastDistance, _gravity, _fallMultiplier, _jumpForce;
-        private bool _canMoveInAir, _isInAir;
+        private bool _canMoveInAir;
+        private bool _isInAir;
 
         private List<Vector3> _gravityCheckersList;
         private float _fallSpeed = 0;

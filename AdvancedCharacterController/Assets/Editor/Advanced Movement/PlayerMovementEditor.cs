@@ -31,6 +31,11 @@ namespace Editor.Advanced_Movement{
         private SerializedProperty _maxLookClamp;
         private SerializedProperty _groundMask;
         private SerializedProperty _runMode;
+        private SerializedProperty _canCrouch;
+        private SerializedProperty _crouchMode;
+        private SerializedProperty _crouchTime;
+        private SerializedProperty _canSlide;
+        private SerializedProperty _slideTime;
 
         #endregion
 
@@ -65,6 +70,11 @@ namespace Editor.Advanced_Movement{
             _maxLookClamp = serializedObject.FindProperty("maxVerticalLookClampValue");
             _groundMask = serializedObject.FindProperty("groundMask");
             _runMode = serializedObject.FindProperty("runMode");
+            _canCrouch = serializedObject.FindProperty("canCrouch");
+            _crouchMode = serializedObject.FindProperty("crouchMode");
+            _crouchTime = serializedObject.FindProperty("crouchTime");
+            _canSlide = serializedObject.FindProperty("canSlide");
+            _slideTime = serializedObject.FindProperty("slideTime");
             _groundCheckDistance = serializedObject.FindProperty("groundCheckCastDistance");
             _numberOfGroundCheckPoints = serializedObject.FindProperty("numberOfGroundedCheckPoints");
             _radiusOfGroundedCheckPoints = serializedObject.FindProperty("radiusOfGroundedCheckPoints");
@@ -152,8 +162,8 @@ namespace Editor.Advanced_Movement{
                 case PlayerMovement.PlayerStates.Running:
                     state = "Running";
                     break;
-                case PlayerMovement.PlayerStates.Falling:
-                    state = "Falling";
+                case PlayerMovement.PlayerStates.InAir:
+                    state = "In Air";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -216,6 +226,23 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.MinMaxSlider(ref min, ref max, -180, 180);
             _minLookClamp.floatValue = min;
             _maxLookClamp.floatValue = max;
+            
+            EditorGUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("Advanced", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_canCrouch);
+            if (_canCrouch.boolValue){
+                EditorGUI.indentLevel++;
+                
+                EditorGUILayout.PropertyField(_crouchMode);
+                EditorGUILayout.PropertyField(_crouchTime);
+                EditorGUILayout.PropertyField(_canSlide);
+                if (_canSlide.boolValue){
+                    EditorGUILayout.PropertyField(_slideTime);
+                }
+                
+                EditorGUI.indentLevel--;
+            }
         }
 
         private void ShowGravityAndJumpVariables()

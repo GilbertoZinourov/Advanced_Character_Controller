@@ -195,7 +195,7 @@ MonoBehaviour:
   cameraOffset: {x: 2, y: 1, z: 0}
   controller: {fileID: 0}
   camTransform: {fileID: 0}
-  desiredMechanics: -1
+  desiredMechanics: 1
   currentState: 0
   walkSpeed: 4
   runSpeed: 8
@@ -208,12 +208,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   runMode: 0
+  canCrouch: 1
+  canSlide: 1
+  crouchMode: 0
+  crouchTime: 0.1
+  slideTime: 0.5
   numberOfGroundedCheckPoints: 4
   radiusOfGroundedCheckPoints: 0.45
   groundCheckCastDistance: 1.1
   gravity: 9.8
   fallMultiplier: 1.5
-  jumpForce: 10
+  jumpForce: 5
   numberOfPossibleJumps: 1
   canMoveInAir: 0
 --- !u!23 &187949774
@@ -293,7 +298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5aa95740e260b0040ac5968bb7f3df90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isRunningInputPressed: 0
 --- !u!114 &187949778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +310,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b59a4a25b78fec498978801e3bdcfdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _invertedX: 0
+  _invertedY: 0
+  _isRunning: 0
+  _canCrouch: 0
+  _canSlide: 0
+  _isCrouched: 0
+  _isInCoroutine: 0
 --- !u!114 &187949779
 MonoBehaviour:
   m_ObjectHideFlags: 0
