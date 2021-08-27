@@ -93,6 +93,10 @@ namespace Advanced_Movement.Individual_Mechanics{
                 _isInAir = true;
             }
         }
+
+        private void Movement(Vector2 input){
+            
+        }
         
         private void Jump(){
             if (_jumpsRemaining > 0){

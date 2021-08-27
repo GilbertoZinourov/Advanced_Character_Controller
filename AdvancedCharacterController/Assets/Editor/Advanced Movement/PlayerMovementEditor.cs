@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Advanced_Movement;
 using UnityEditor;
+using UnityEngine;
 
 namespace Editor.Advanced_Movement{
     [CustomEditor(typeof(PlayerMovement))]
@@ -31,7 +32,11 @@ namespace Editor.Advanced_Movement{
         private SerializedProperty _maxLookClamp;
         private SerializedProperty _groundMask;
         private SerializedProperty _runMode;
-        private SerializedProperty _canCrouch;
+
+        #endregion
+
+        #region CrouchAndSlide
+        
         private SerializedProperty _crouchMode;
         private SerializedProperty _crouchTime;
         private SerializedProperty _canSlide;
@@ -70,11 +75,12 @@ namespace Editor.Advanced_Movement{
             _maxLookClamp = serializedObject.FindProperty("maxVerticalLookClampValue");
             _groundMask = serializedObject.FindProperty("groundMask");
             _runMode = serializedObject.FindProperty("runMode");
-            _canCrouch = serializedObject.FindProperty("canCrouch");
+            
             _crouchMode = serializedObject.FindProperty("crouchMode");
             _crouchTime = serializedObject.FindProperty("crouchTime");
             _canSlide = serializedObject.FindProperty("canSlide");
             _slideTime = serializedObject.FindProperty("slideTime");
+            
             _groundCheckDistance = serializedObject.FindProperty("groundCheckCastDistance");
             _numberOfGroundCheckPoints = serializedObject.FindProperty("numberOfGroundedCheckPoints");
             _radiusOfGroundedCheckPoints = serializedObject.FindProperty("radiusOfGroundedCheckPoints");
@@ -165,6 +171,9 @@ namespace Editor.Advanced_Movement{
                 case PlayerMovement.PlayerStates.InAir:
                     state = "In Air";
                     break;
+                case PlayerMovement.PlayerStates.Sliding:
+                    state = "Sliding";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -196,6 +205,9 @@ namespace Editor.Advanced_Movement{
                         case PlayerMovement.Mechanics.GravityAndJump:
                             ShowGravityAndJumpVariables();
                             break;
+                        case PlayerMovement.Mechanics.CrouchAndSlide:
+                            ShowCrouchAndSlideVariables();
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -226,23 +238,6 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.MinMaxSlider(ref min, ref max, -180, 180);
             _minLookClamp.floatValue = min;
             _maxLookClamp.floatValue = max;
-            
-            EditorGUILayout.Space(10);
-            
-            EditorGUILayout.LabelField("Advanced", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_canCrouch);
-            if (_canCrouch.boolValue){
-                EditorGUI.indentLevel++;
-                
-                EditorGUILayout.PropertyField(_crouchMode);
-                EditorGUILayout.PropertyField(_crouchTime);
-                EditorGUILayout.PropertyField(_canSlide);
-                if (_canSlide.boolValue){
-                    EditorGUILayout.PropertyField(_slideTime);
-                }
-                
-                EditorGUI.indentLevel--;
-            }
         }
 
         private void ShowGravityAndJumpVariables()
@@ -261,6 +256,20 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.PropertyField(_jumpForce);
             EditorGUILayout.PropertyField(_numberOfPossibleJumps);
             EditorGUILayout.PropertyField(_canMoveInAir);
+        }
+
+        private void ShowCrouchAndSlideVariables(){
+            EditorGUILayout.PropertyField(_crouchMode);
+            EditorGUILayout.PropertyField(_crouchTime);
+            EditorGUILayout.PropertyField(_canSlide);
+            if (_canSlide.boolValue){
+                EditorGUI.indentLevel++;
+                
+                EditorGUILayout.PropertyField(_slideTime);
+                EditorGUILayout.PropertyField(_groundMask);
+                
+                EditorGUI.indentLevel--;
+            }
         }
     }
 }

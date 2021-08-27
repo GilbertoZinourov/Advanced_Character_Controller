@@ -12,7 +12,8 @@ namespace Advanced_Movement{
         {
             Nothing = 0,
             Base8DirMovement = 1 << 0,
-            GravityAndJump = 1 << 1,
+            CrouchAndSlide = 1 << 1,
+            GravityAndJump = 1 << 2,
         }
     
         public enum FirstOrThird
@@ -83,10 +84,6 @@ namespace Advanced_Movement{
         public LayerMask groundMask;
         public PressMode runMode;
         
-        public bool canCrouch, canSlide;
-        public PressMode crouchMode;
-        public float crouchTime, slideTime;
-
         private Vector3 _movementDirection;
         
         public Vector3 MovementDirection{
@@ -96,6 +93,14 @@ namespace Advanced_Movement{
 
         #endregion
 
+        #region Crouch And Slide
+        
+        public bool canSlide;
+        public PressMode crouchMode;
+        public float crouchTime, slideTime;
+
+        #endregion
+        
         #region Gravity And Jump Variables
 
         [Range(4, 16)] public int numberOfGroundedCheckPoints = 4;
@@ -205,9 +210,7 @@ namespace Advanced_Movement{
         }
 
         #endregion
-        
-        
-        
+
         #region PlayerStates
         
         public void ChangePlayerState(PlayerStates state)
@@ -225,8 +228,8 @@ namespace Advanced_Movement{
             Color defaultColor = Gizmos.color;
             // Gizmos.color = Color.blue;
             // Gizmos.DrawLine(transform.position, transform.position + Vector3.down * 5);
-            // Gizmos.color = Color.green;
-            // Gizmos.DrawLine(transform.position, transform.position + _finalDir);
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, transform.position + MovementDirection.normalized);
         
             DrawGravityCheckers(Color.red);
             Gizmos.color = defaultColor;

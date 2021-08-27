@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Advanced_Movement.Individual_Mechanics{
@@ -12,14 +11,12 @@ namespace Advanced_Movement.Individual_Mechanics{
             _minVerticalLookClampValue,
             _maxVerticalLookClampValue,
             _currentMovementSpeed = 0,
-            _xRotation = 0f,
-            _crouchTime,
-            _slideTime;
+            _xRotation = 0f;
 
-        public bool _invertedX, _invertedY, _isRunning, _canCrouch, _canSlide, _isCrouched, _isInCoroutine;
+        private bool _invertedX, _invertedY, _isRunning;
         private LayerMask _groundMask;
 
-        private PlayerMovement.PressMode _runMode, _crouchMode;
+        private PlayerMovement.PressMode _runMode;
 
         protected override void OnEnable(){
             base.OnEnable();
@@ -30,8 +27,6 @@ namespace Advanced_Movement.Individual_Mechanics{
             _pm.OnRunningInputPressed += Running;
             _pm.OnRunningInputReleased += RunningOff;
             _pm.OnMouseInput += LookAround;
-            _pm.OnCrouchInputPressed += Crouch;
-            _pm.OnCrouchInputReleased += CrouchOff;
         }
 
         protected override void OnDisable(){
@@ -41,8 +36,6 @@ namespace Advanced_Movement.Individual_Mechanics{
             _pm.OnRunningInputPressed -= Running;
             _pm.OnRunningInputReleased -= RunningOff;
             _pm.OnMouseInput -= LookAround;
-            _pm.OnCrouchInputPressed -= Crouch;
-            _pm.OnCrouchInputReleased -= CrouchOff;
         }
 
         private void Update(){
@@ -61,20 +54,6 @@ namespace Advanced_Movement.Individual_Mechanics{
 
             _runMode = _pm.runMode;
             _groundMask = _pm.groundMask;
-
-            _canCrouch = _pm.canCrouch;
-            _crouchMode = _pm.crouchMode;
-            _canSlide = _pm.canSlide;
-            _slideTime = _pm.slideTime;
-
-            if (_canCrouch){
-                _crouchMode = _pm.crouchMode;
-                _crouchTime = _pm.crouchTime;
-                _canSlide = _pm.canSlide;
-            }
-            else{
-                _canSlide = false;
-            }
         }
 
         protected override void CheckIfEnabled(){
@@ -92,35 +71,19 @@ namespace Advanced_Movement.Individual_Mechanics{
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            if (_isRunning && _pm.mechanicsDictionary[PlayerMovement.Mechanics.CrouchAndSlide.ToString()]){
+                GetComponent<CrouchAndSlide>().CrouchOff();
+            }
         }
 
-        private void RunningOff(){
+        public void RunningOff(){
             _isRunning = false;
         }
 
-        private void Crouch(){
-            if (!_canCrouch) return;
-            switch (_crouchMode){
-                case PlayerMovement.PressMode.Toggle:
-                    _isCrouched = !_isCrouched;
-                    break;
-                case PlayerMovement.PressMode.Hold:
-                    _isCrouched = true;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            if (!_isInCoroutine){
-                StartCoroutine(CrouchCoroutine());
-                StartCoroutine(SlideCoroutine());
-            }
-        }
-
-        private void CrouchOff(){
-        }
-
         private void Movement(Vector2 input){
+            if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
+                _pm.currentState == PlayerMovement.PlayerStates.InAir) return;
             float targetSpeed;
             if (input.magnitude <= .01f){
                 targetSpeed = 0;
@@ -177,90 +140,20 @@ namespace Advanced_Movement.Individual_Mechanics{
 
         // Applica il movimento al CharacterController tenendo in considerazione le irregolarità del terreno
         private void Move(){
-            if (_pm.currentState == PlayerMovement.PlayerStates.Idle
-                || _pm.currentState == PlayerMovement.PlayerStates.Walking
-                || _pm.currentState == PlayerMovement.PlayerStates.Running){
-                RaycastHit hit;
-                if (Physics.Raycast(transform.position, Vector3.down, out hit, _groundMask)){
-                    Vector3 right = new Vector3(_pm.MovementDirection.z, 0, -_pm.MovementDirection.x);
-                    _pm.MovementDirection = Vector3.Cross(right, hit.normal).normalized;
-                }
-
-                _pm.MovementDirection *= _currentMovementSpeed;
-                if (_pm.MovementDirection.magnitude <= .01f && _runMode == PlayerMovement.PressMode.Toggle){
-                    RunningOff();
-                }
-
-                _pm.controller.Move(_pm.MovementDirection * Time.deltaTime);
-            }
-        }
-
-        private IEnumerator SlideCoroutine(){
-            _isInCoroutine = true;
-            if (_canSlide && _pm.currentState == PlayerMovement.PlayerStates.Running){
-                _pm.currentState = PlayerMovement.PlayerStates.Sliding;
-            
-                float time = 0f;
-                var startVector = _pm.MovementDirection;
-                while (_pm.MovementDirection != Vector3.zero){
-                    _pm.MovementDirection = Vector3.Lerp(startVector, Vector3.zero, time / _slideTime);
-                    time += Time.deltaTime;
-                    yield return null;
-                }
+            if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
+                _pm.currentState == PlayerMovement.PlayerStates.InAir) return;
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, _groundMask)){
+                Vector3 right = new Vector3(_pm.MovementDirection.z, 0, -_pm.MovementDirection.x);
+                _pm.MovementDirection = Vector3.Cross(right, hit.normal).normalized;
             }
 
-            StartCoroutine(CrouchCoroutine());
-        }
-
-        private IEnumerator CrouchCoroutine(){
-            _isInCoroutine = true;
-            // if (_canSlide && _pm.currentState == PlayerMovement.PlayerStates.Running){
-            //     _pm.currentState = PlayerMovement.PlayerStates.Sliding;
-            //
-            //     float time = 0f;
-            //     var startVector = _pm.MovementDirection;
-            //     while (time <= _slideTime){
-            //         _pm.MovementDirection = Vector3.Lerp(startVector, Vector3.zero, time / _slideTime);
-            //         time += Time.deltaTime;
-            //         yield return null;
-            //     }
-            // }
-
-            Vector3 targetCameraPosition, targetControllerPosition;
-            float targetControllerHeight;
-
-            if (!_isCrouched){
-                targetCameraPosition =
-                    _camTransform.parent.localPosition + Vector3.up * .85f; // HardCoded non ideale...
-                targetControllerHeight = 2;
-                targetControllerPosition = Vector3.zero;
-            }
-            else{
-                targetCameraPosition =
-                    _camTransform.parent.localPosition - Vector3.up * .85f; // HardCoded non ideale...
-                targetControllerHeight = 1;
-                targetControllerPosition = Vector3.up * -.5f;
+            _pm.MovementDirection *= _currentMovementSpeed;
+            if (_pm.MovementDirection.magnitude <= .01f && _runMode == PlayerMovement.PressMode.Toggle){
+                RunningOff();
             }
 
-            var time = 0f;
-            Vector3 startCameraPosition = _camTransform.parent.localPosition;
-            float startControllerHeight = _pm.controller.height;
-            Vector3 startControllerPosition = _pm.controller.center;
-
-            while (_camTransform.parent.localPosition != targetCameraPosition){
-                var speed = time / _crouchTime;
-                _camTransform.parent.localPosition =
-                    Vector3.Lerp(startCameraPosition, targetCameraPosition, speed);
-                _pm.controller.height = Mathf.Lerp(startControllerHeight, targetControllerHeight, speed);
-                _pm.controller.center = Vector3.Lerp(startControllerPosition, targetControllerPosition, speed);
-
-                time += Time.deltaTime;
-
-                yield return null;
-            }
-
-            _isInCoroutine = false;
-            yield return null;
+            _pm.controller.Move(_pm.MovementDirection * Time.deltaTime);
         }
     }
 }
