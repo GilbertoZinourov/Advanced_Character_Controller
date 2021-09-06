@@ -111,7 +111,8 @@ namespace Advanced_Movement{
 
         public float jumpForce;
         [Range(1, 10)] public int numberOfPossibleJumps = 1;
-        public bool canMoveInAir;
+        [Range(0, 100)] public float fallOffSpeed;
+        public float maxInAirSpeed;
 
         #endregion
 

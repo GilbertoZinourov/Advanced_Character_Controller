@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Advanced_Movement;
 using UnityEditor;
-using UnityEngine;
 
 namespace Editor.Advanced_Movement{
     [CustomEditor(typeof(PlayerMovement))]
@@ -53,7 +52,8 @@ namespace Editor.Advanced_Movement{
         private SerializedProperty _fallMultiplier;
         private SerializedProperty _jumpForce;
         private SerializedProperty _numberOfPossibleJumps;
-        private SerializedProperty _canMoveInAir;
+        private SerializedProperty _fallOffSpeed;
+        private SerializedProperty _maxInAirSpeed;
 
         #endregion
 
@@ -88,7 +88,8 @@ namespace Editor.Advanced_Movement{
             _fallMultiplier = serializedObject.FindProperty("fallMultiplier");
             _jumpForce = serializedObject.FindProperty("jumpForce");
             _numberOfPossibleJumps = serializedObject.FindProperty("numberOfPossibleJumps");
-            _canMoveInAir = serializedObject.FindProperty("canMoveInAir");
+            _fallOffSpeed = serializedObject.FindProperty("fallOffSpeed");
+            _maxInAirSpeed = serializedObject.FindProperty("maxInAirSpeed");
 
 
             CreateDictionary();
@@ -255,7 +256,12 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.LabelField("Jump Variables", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_jumpForce);
             EditorGUILayout.PropertyField(_numberOfPossibleJumps);
-            EditorGUILayout.PropertyField(_canMoveInAir);
+            
+            EditorGUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("In Air Variables", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(_fallOffSpeed);
+            EditorGUILayout.PropertyField(_maxInAirSpeed);
         }
 
         private void ShowCrouchAndSlideVariables(){

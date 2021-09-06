@@ -7,28 +7,36 @@ namespace Advanced_Movement.Individual_Mechanics{
         private int _numberOfGroundedCheckPoints, _numberOfPossibleJumps;
         public float _jumpsRemaining;
         private float _radiusOfGroundedCheckPoints, _groundCheckCastDistance, _gravity, _fallMultiplier, _jumpForce;
-        private bool _canMoveInAir;
-        private bool _isInAir;
+        public bool _isInAir;
 
         private List<Vector3> _gravityCheckersList;
         private float _fallSpeed = 0;
 
         private LayerMask _groundMask;
 
+        private Transform _camTransform;
+        private Vector3 _targetXZ;
+        private float _fallOffSpeed, _maxInAirSpeed;
+
         private void Update(){
             CheckGrounded();
+            if (_pm.currentState == PlayerMovement.PlayerStates.InAir){
+                
+            }
         }
 
         protected override void OnEnable(){
             base.OnEnable();
 
             _pm.OnJumpInputPressed += Jump;
+            _pm.OnMovementInput += Movement;
         }
 
         protected override void OnDisable(){
             base.OnDisable();
 
             _pm.OnJumpInputPressed -= Jump;
+            _pm.OnMovementInput -= Movement;
         }
 
         protected override void CheckIfEnabled(){
@@ -46,11 +54,15 @@ namespace Advanced_Movement.Individual_Mechanics{
 
             _numberOfPossibleJumps = _pm.numberOfPossibleJumps;
             _jumpForce = _pm.jumpForce;
-            _canMoveInAir = _pm.canMoveInAir;
 
             _jumpsRemaining = _numberOfPossibleJumps;
             
             CreateGravityCheckers();
+
+            _camTransform = Camera.main.transform;
+
+            _fallOffSpeed = _pm.fallOffSpeed;
+            _maxInAirSpeed = _pm.maxInAirSpeed;
         }
         
         #region Mechanics Methods
@@ -81,13 +93,31 @@ namespace Advanced_Movement.Individual_Mechanics{
                         _fallSpeed = 0;
                         _jumpsRemaining = _numberOfPossibleJumps;
                         _isInAir = false;
+                        _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
                         return;
                     }
                 }
             }
+            _pm.ChangePlayerState(PlayerMovement.PlayerStates.InAir);
+            _fallSpeed -= _gravity * _fallMultiplier * Time.deltaTime;
+            
+            // Add a Lerp to zero on the (x, z) plane?
 
-            _fallSpeed -= _gravity * Time.deltaTime;
-            _pm.controller.Move(Vector3.up * (_fallSpeed * _fallMultiplier * Time.deltaTime));
+            Vector2 xzPlane = new Vector2(_pm.MovementDirection.x, _pm.MovementDirection.z);
+
+            float fallOffSpeed = _fallOffSpeed / 100;
+            
+            if (xzPlane.magnitude > _maxInAirSpeed){
+                fallOffSpeed = _fallOffSpeed / 1000;
+            }
+
+            xzPlane = Vector2.Lerp(xzPlane, new Vector2(_targetXZ.x, _targetXZ.z), fallOffSpeed);
+            
+            Vector3 falloffVector = new Vector3(xzPlane.x, _fallSpeed, xzPlane.y);
+            _pm.MovementDirection = falloffVector;
+
+            _pm.controller.Move(_pm.MovementDirection * Time.deltaTime);
+
             if (!_isInAir){
                 _jumpsRemaining--;
                 _isInAir = true;
@@ -95,12 +125,25 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void Movement(Vector2 input){
+            if (_pm.currentState != PlayerMovement.PlayerStates.InAir) return;
+            float targetSpeed;
+            if (input.magnitude <= .01f){
+                targetSpeed = 0;
+            }
+            else{
+                targetSpeed = _maxInAirSpeed;
+            }
             
+            _targetXZ =
+                Vector3.Normalize(new Vector3(_camTransform.forward.x, 0, _camTransform.forward.z)) * input.y +
+                _camTransform.right * input.x;
+            _targetXZ *= targetSpeed;
         }
         
         private void Jump(){
             if (_jumpsRemaining > 0){
                 _fallSpeed = _jumpForce;
+                _pm.MovementDirection = new Vector3(_pm.MovementDirection.x, _fallSpeed, _pm.MovementDirection.z);
                 if (_isInAir){
                     _jumpsRemaining--;
                 }
