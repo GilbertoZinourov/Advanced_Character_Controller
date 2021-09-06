@@ -5,9 +5,9 @@ namespace Advanced_Movement.Individual_Mechanics{
     public class Gravity : Mechanic
     {
         private int _numberOfGroundedCheckPoints, _numberOfPossibleJumps;
-        public float _jumpsRemaining;
+        private float _jumpsRemaining;
         private float _radiusOfGroundedCheckPoints, _groundCheckCastDistance, _gravity, _fallMultiplier, _jumpForce;
-        public bool _isInAir;
+        private bool _isInAir;
 
         private List<Vector3> _gravityCheckersList;
         private float _fallSpeed = 0;
@@ -18,11 +18,11 @@ namespace Advanced_Movement.Individual_Mechanics{
         private Vector3 _targetXZ;
         private float _fallOffSpeed, _maxInAirSpeed;
 
+        private CrouchAndSlide _crouchScript;
+        private EightDirMovement _dirMovementScript;
+
         private void Update(){
             CheckGrounded();
-            if (_pm.currentState == PlayerMovement.PlayerStates.InAir){
-                
-            }
         }
 
         protected override void OnEnable(){
@@ -63,6 +63,9 @@ namespace Advanced_Movement.Individual_Mechanics{
 
             _fallOffSpeed = _pm.fallOffSpeed;
             _maxInAirSpeed = _pm.maxInAirSpeed;
+
+            _crouchScript = GetComponent<CrouchAndSlide>();
+            _dirMovementScript = GetComponent<EightDirMovement>();
         }
         
         #region Mechanics Methods
@@ -121,6 +124,10 @@ namespace Advanced_Movement.Individual_Mechanics{
             if (!_isInAir){
                 _jumpsRemaining--;
                 _isInAir = true;
+                
+                // Manage other movement in the moment of the jump
+                _crouchScript.CrouchOff();
+                _dirMovementScript.RunningOff();
             }
         }
 

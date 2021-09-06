@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e1b168a2111a3746bc99c4d64844894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desiredPerspective: 1
+  desiredPerspective: 0
   firstPersonCameraPosition: {fileID: 196767442}
   centerOfRotation: {fileID: 646620214}
   radiusOfRotation: 5
@@ -221,7 +221,7 @@ MonoBehaviour:
   jumpForce: 8
   numberOfPossibleJumps: 2
   fallOffSpeed: 5
-  maxInAirSpeed: 0
+  maxInAirSpeed: 3
 --- !u!23 &187949774
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -323,8 +323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f374593da6791f4bb68869c01780a62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpsRemaining: 0
-  _isInAir: 0
 --- !u!114 &187949780
 MonoBehaviour:
   m_ObjectHideFlags: 0
