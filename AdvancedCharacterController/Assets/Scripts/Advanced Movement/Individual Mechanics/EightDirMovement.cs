@@ -83,7 +83,8 @@ namespace Advanced_Movement.Individual_Mechanics{
 
         private void Movement(Vector2 input){
             if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
-                _pm.currentState == PlayerMovement.PlayerStates.InAir) return;
+                _pm.currentState == PlayerMovement.PlayerStates.InAir || 
+                _pm.currentState == PlayerMovement.PlayerStates.Mantling) return;
             float targetSpeed;
             if (input.magnitude <= .01f){
                 targetSpeed = 0;
@@ -112,6 +113,8 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void LookAround(Vector2 input){
+            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling) return;
+            
             if (_invertedX){
                 input.x *= -1;
             }
@@ -141,7 +144,8 @@ namespace Advanced_Movement.Individual_Mechanics{
         // Applica il movimento al CharacterController tenendo in considerazione le irregolarità del terreno
         private void Move(){
             if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
-                _pm.currentState == PlayerMovement.PlayerStates.InAir) return;
+                _pm.currentState == PlayerMovement.PlayerStates.InAir ||
+                _pm.currentState == PlayerMovement.PlayerStates.Mantling) return;
             RaycastHit hit;
             if (Physics.Raycast(transform.position, Vector3.down, out hit, _groundMask)){
                 Vector3 right = new Vector3(_pm.MovementDirection.z, 0, -_pm.MovementDirection.x);

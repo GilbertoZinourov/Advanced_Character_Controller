@@ -29,6 +29,8 @@ namespace Advanced_Movement{
             Running,
             Sliding,
             InAir,
+            Mantling,
+            WallRunning,
         }
 
         public enum PressMode{

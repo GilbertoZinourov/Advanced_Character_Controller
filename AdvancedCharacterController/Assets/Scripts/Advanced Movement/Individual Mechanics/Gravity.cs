@@ -87,8 +87,13 @@ namespace Advanced_Movement.Individual_Mechanics{
             }
         }
         
-        private void CheckGrounded()
-        {
+        private void CheckGrounded(){
+            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling ||
+                _pm.currentState == PlayerMovement.PlayerStates.WallRunning){
+                _fallSpeed = 0;
+                return;
+            }
+            
             if (_fallSpeed <= 0){
                 foreach (var point in _gravityCheckersList){
                     Vector3 pointRelativeToPlayer = transform.position + point;

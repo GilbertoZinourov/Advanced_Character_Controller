@@ -175,6 +175,12 @@ namespace Editor.Advanced_Movement{
                 case PlayerMovement.PlayerStates.Sliding:
                     state = "Sliding";
                     break;
+                case PlayerMovement.PlayerStates.Mantling:
+                    state = "Mantling";
+                    break;
+                case PlayerMovement.PlayerStates.WallRunning:
+                    state = "Wall Running";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
