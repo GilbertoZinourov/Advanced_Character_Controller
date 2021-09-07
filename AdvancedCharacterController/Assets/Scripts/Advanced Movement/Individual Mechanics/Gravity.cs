@@ -101,7 +101,10 @@ namespace Advanced_Movement.Individual_Mechanics{
                         _fallSpeed = 0;
                         _jumpsRemaining = _numberOfPossibleJumps;
                         _isInAir = false;
-                        _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
+                        if (_pm.currentState == PlayerMovement.PlayerStates.InAir){
+                            _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
+                        }
+
                         return;
                     }
                 }
