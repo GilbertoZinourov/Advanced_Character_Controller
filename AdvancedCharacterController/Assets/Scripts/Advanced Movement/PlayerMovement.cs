@@ -14,6 +14,7 @@ namespace Advanced_Movement{
             Base8DirMovement = 1 << 0,
             CrouchAndSlide = 1 << 1,
             GravityAndJump = 1 << 2,
+            MantleAndWallClimb = 1 << 3,
         }
     
         public enum FirstOrThird
@@ -116,6 +117,16 @@ namespace Advanced_Movement{
         [Range(0, 100)] public float fallOffSpeed;
         public float maxInAirSpeed;
 
+        #endregion
+        
+        #region Mantle And WallClimb Variables
+
+        public int numberOfCheckers = 10;
+        public float playerHeight = 2, checkDistance = .6f, mantleTimeVert = .4f, 
+            mantleTimeHor = .2f, wallClimbTime = 2f, wallClimbSpeed = 4;
+        public Vector3 centerOfPlayer = Vector3.zero;
+        public bool canWallClimb;
+        
         #endregion
 
         #region Unity Methods

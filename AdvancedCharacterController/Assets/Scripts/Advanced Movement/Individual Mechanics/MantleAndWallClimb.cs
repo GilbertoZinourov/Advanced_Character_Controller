@@ -6,27 +6,48 @@ namespace Advanced_Movement.Individual_Mechanics{
     public class MantleAndWallClimb : Mechanic{
         private List<Vector3> _checkers;
 
-        public int _numOfCheckers = 4;
-        public float _playerHeight = 2;
-        public Vector3 _centerOfPlayer = Vector3.zero;
-        public float _distance = .5f;
+        private int _numOfCheckers = 4;
+        private float _playerHeight = 2;
+        private Vector3 _centerOfPlayer = Vector3.zero;
+        private float _distance = .5f;
 
-        public LayerMask ground;
+        private LayerMask _ground;
 
-        public bool isMantling = false, isWallClimbing = false;
+        private bool _isMantling = false, _isWallClimbing = false;
 
         private float _distanceBetweenCheckers = 0;
 
-        public float mantleTimeVert = .8f, mantleTimeHor = .2f;
+        private float _mantleTimeVert = .8f, _mantleTimeHor = .2f;
 
-        public float wallClimbTime = 2f, climbSpeed = 4;
+        private float _wallClimbTime = 2f, _climbSpeed = 4;
+
+        private bool _canWallClimb;
 
         private void Update(){
             CheckIfNearWall();
         }
 
         protected override void VariablesSetUp(){
+            _numOfCheckers = _pm.numberOfCheckers;
+            _playerHeight = _pm.playerHeight;
+            _centerOfPlayer = _pm.centerOfPlayer;
+            _distance = _pm.checkDistance;
+
+            _mantleTimeHor = _pm.mantleTimeHor;
+            _mantleTimeVert = _pm.mantleTimeVert;
+
+            _wallClimbTime = _pm.wallClimbTime;
+            _climbSpeed = _pm.wallClimbSpeed;
+
+            _ground = _pm.groundMask;
+
+            _canWallClimb = _pm.canWallClimb;
+            
             CreateCheckers();
+        }
+
+        protected override void CheckIfEnabled(){
+            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.MantleAndWallClimb.ToString()];
         }
 
         private void CreateCheckers(){
@@ -46,41 +67,39 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void CheckIfNearWall(){
-            if (!Physics.Raycast(transform.position + _checkers[0], transform.forward, _distance, ground)) return;
-
-            // Da cambiare per ledge fini
-            
             bool atLedge = false;
+            bool atWall = false;
             int index = 999;
 
-            for (int i = 1; i < _checkers.Count; i++){
-                if (Physics.Raycast(transform.position + _checkers[i], transform.forward, _distance, ground)){
-                    atLedge = false;
-                    //Debug.Log("Cast " + i + " hiteth");
-                    continue;
+            for (int i = 0; i < _checkers.Count - 1; i++){
+                if (Physics.Raycast(transform.position + _checkers[i], transform.forward, _distance, _ground)){
+                    atWall = true;
                 }
-
-                atLedge = true;
-                if (i < index){
-                    index = i;
+                else{
+                    if (!atWall || atLedge) continue;
+                    atLedge = true;
+                    if (i < index){
+                        index = i;
+                    }
                 }
-
-                //Debug.Log("Cast " + i + " missed");
             }
 
-            if (atLedge && !isMantling){
-                //print("At ledge and the free raycast is the number " + (index + 1));
+            if (atLedge && !_isMantling && 
+                (_pm.currentState == PlayerMovement.PlayerStates.InAir || 
+                _pm.currentState == PlayerMovement.PlayerStates.WallRunning)){
+                StopAllCoroutines();
+                _isWallClimbing = false;
                 StartCoroutine(Mantle(index + 1));
             }
             else{
-                if (_pm.currentState == PlayerMovement.PlayerStates.Running && !isWallClimbing){
+                if (_canWallClimb && atWall && _pm.currentState == PlayerMovement.PlayerStates.Running && !_isWallClimbing){
                     StartCoroutine(WallClimb());
                 }
             }
         }
 
         private IEnumerator WallClimb(){
-            isWallClimbing = true;
+            _isWallClimbing = true;
 
             _pm.currentState = PlayerMovement.PlayerStates.WallRunning;
             
@@ -88,29 +107,24 @@ namespace Advanced_Movement.Individual_Mechanics{
 
             RaycastHit hit;
 
-            while (time < wallClimbTime){
-                if(Physics.Raycast(transform.position + _checkers[(int)_checkers.Count/2], transform.forward, out hit, ground))
+            while (time < _wallClimbTime){
+                if(Physics.Raycast(transform.position + _checkers[(int)_checkers.Count/2], transform.forward, out hit, _ground))
                 {
                     var climbDir = Vector3.Cross(hit.normal, -transform.right);
-                    _pm.MovementDirection = climbDir * climbSpeed;
+                    _pm.MovementDirection = climbDir * _climbSpeed;
                     _pm.controller.Move(_pm.MovementDirection * Time.deltaTime);
                 }
 
                 time += Time.deltaTime;
                 yield return null;
             }
-
             _pm.currentState = PlayerMovement.PlayerStates.Idle;
-            isWallClimbing = false;
+            _isWallClimbing = false;
             yield return null;
         }
 
         private IEnumerator Mantle(int index){
-            isMantling = true;
-            
-            StopCoroutine(WallClimb());
-            isWallClimbing = false;
-            
+            _isMantling = true;
             _pm.ChangePlayerState(PlayerMovement.PlayerStates.Mantling);
 
             var start = transform.position;
@@ -118,7 +132,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             var time = 0f;
             
             while (transform.position != targetPos){
-                transform.position = Vector3.Lerp(start, targetPos, time / mantleTimeVert);
+                transform.position = Vector3.Lerp(start, targetPos, time / _mantleTimeVert);
                 time += Time.deltaTime;
                 yield return null;
             }
@@ -128,14 +142,14 @@ namespace Advanced_Movement.Individual_Mechanics{
             time = 0;
             
             while (transform.position != targetPos){
-                transform.position = Vector3.Lerp(start, targetPos, time / mantleTimeHor);
+                transform.position = Vector3.Lerp(start, targetPos, time / _mantleTimeHor);
                 time += Time.deltaTime;
                 yield return null;
             }
             
             _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
             
-            isMantling = false;
+            _isMantling = false;
             yield return null;
         }
 

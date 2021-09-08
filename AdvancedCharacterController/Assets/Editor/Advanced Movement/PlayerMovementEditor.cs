@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Advanced_Movement;
+using Advanced_Movement.Individual_Mechanics;
 using UnityEditor;
+using UnityEngine;
 
 namespace Editor.Advanced_Movement{
     [CustomEditor(typeof(PlayerMovement))]
@@ -57,8 +59,29 @@ namespace Editor.Advanced_Movement{
 
         #endregion
 
-        private void OnEnable()
-        {
+        #region Mantle And WallClimb
+
+        private SerializedProperty _numOfCheckers;
+        private SerializedProperty _playerHeight;
+        private SerializedProperty _centerOfPlayer;
+        private SerializedProperty _checkDistance;
+        private SerializedProperty _mantleTimeVert;
+        private SerializedProperty _mantleTimeHor;
+
+        private SerializedProperty _canWallClimb;
+        
+        private SerializedProperty _wallClimbTime;
+        private SerializedProperty _wallClimbSpeed;
+
+        #endregion
+
+        private void OnEnable(){
+            var castedTarget = target as PlayerMovement;
+            castedTarget.GetComponent<EightDirMovement>().hideFlags = HideFlags.HideInInspector;
+            castedTarget.GetComponent<GravityAndJump>().hideFlags = HideFlags.HideInInspector;
+            castedTarget.GetComponent<CrouchAndSlide>().hideFlags = HideFlags.HideInInspector;
+            castedTarget.GetComponent<MantleAndWallClimb>().hideFlags = HideFlags.HideInInspector;
+            
             _playerMovement = (PlayerMovement) target;
         
             _desiredPerspective = serializedObject.FindProperty("desiredPerspective");
@@ -90,7 +113,16 @@ namespace Editor.Advanced_Movement{
             _numberOfPossibleJumps = serializedObject.FindProperty("numberOfPossibleJumps");
             _fallOffSpeed = serializedObject.FindProperty("fallOffSpeed");
             _maxInAirSpeed = serializedObject.FindProperty("maxInAirSpeed");
-
+            
+            _numOfCheckers = serializedObject.FindProperty("numberOfCheckers");
+            _playerHeight = serializedObject.FindProperty("playerHeight");
+            _centerOfPlayer = serializedObject.FindProperty("centerOfPlayer");
+            _checkDistance = serializedObject.FindProperty("checkDistance");
+            _mantleTimeVert = serializedObject.FindProperty("mantleTimeVert");
+            _mantleTimeHor = serializedObject.FindProperty("mantleTimeHor");
+            _canWallClimb = serializedObject.FindProperty("canWallClimb");
+            _wallClimbTime = serializedObject.FindProperty("wallClimbTime");
+            _wallClimbSpeed = serializedObject.FindProperty("wallClimbSpeed");
 
             CreateDictionary();
         }
@@ -215,6 +247,9 @@ namespace Editor.Advanced_Movement{
                         case PlayerMovement.Mechanics.CrouchAndSlide:
                             ShowCrouchAndSlideVariables();
                             break;
+                        case PlayerMovement.Mechanics.MantleAndWallClimb:
+                            ShowMantleAndWallClimbVariables();
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -223,11 +258,19 @@ namespace Editor.Advanced_Movement{
             }
         }
 
+        private void AddPropertyWithTooltip(SerializedProperty property, string label, string tooltipDescription){
+            EditorGUILayout.PropertyField(property, new GUIContent(label, tooltipDescription));
+        }
+        
         private void Show8DirMovementVariables()
         {
             EditorGUILayout.LabelField("Movement Variables", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_walkSpeed);
+            AddPropertyWithTooltip(_walkSpeed, "Walk Speed", "The speed at witch the player will move when walking\n(Depends on input intensity like JoyStick tilt)");
             EditorGUILayout.PropertyField(_runSpeed);
+            if (_runSpeed.floatValue < _walkSpeed.floatValue){
+                EditorGUILayout.HelpBox("RUNNING SPEED MUST BE GREATER THEN THE WALKING SPEED", MessageType.Warning);
+            }
+            
             EditorGUILayout.PropertyField(_runMode);
             EditorGUILayout.PropertyField(_groundMask);
             
@@ -279,6 +322,34 @@ namespace Editor.Advanced_Movement{
                 
                 EditorGUILayout.PropertyField(_slideTime);
                 EditorGUILayout.PropertyField(_groundMask);
+                
+                EditorGUI.indentLevel--;
+            }
+        }
+
+        private void ShowMantleAndWallClimbVariables(){
+            EditorGUILayout.LabelField("Preparations", EditorStyles.boldLabel);
+            AddPropertyWithTooltip(_numOfCheckers, "Number Of Checkers", "The number of Checkers that will check the presence of a wall or ledge in the immediate front of the player");
+            AddPropertyWithTooltip(_playerHeight, "Player Height", "The height of the player model in Unity units");
+            AddPropertyWithTooltip(_centerOfPlayer, "Center Of Player", "The center point of the player model relative to the root");
+            AddPropertyWithTooltip(_checkDistance, "Check Distance", "The distance from the vertical axis passing through Center Of Player at witch the Raycast is loocking for walls\n(Suggested: 0.1 more then the radius of the Character Controller)");
+            AddPropertyWithTooltip(_groundMask, "Ground Mask", "The LayerMask of the surfaces witch the player can walk, run or wall climb on");
+            
+            EditorGUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("Mantle", EditorStyles.boldLabel);
+            AddPropertyWithTooltip(_mantleTimeVert, "Vertical Mantle Time", "Mantling is done in two steps:\n1 - move up in Vertical Mantle Time seconds\n2 - move forward in Horizontal Mantle Time seconds");
+            AddPropertyWithTooltip(_mantleTimeHor, "Horizontal Mantle Time", "Mantling is done in two steps:\n1 - move up in Vertical Mantle Time seconds\n2 - move forward in Horizontal Mantle Time seconds");
+            
+            EditorGUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("Wall Climb", EditorStyles.boldLabel);
+            AddPropertyWithTooltip(_canWallClimb, "Can Wall Climb", "Can the player climb up a wall if running against it?");
+            if (_canWallClimb.boolValue){
+                EditorGUI.indentLevel++;
+                
+                AddPropertyWithTooltip(_wallClimbTime, "Wall Climb Time", "For how long the wall climb will go on");
+                AddPropertyWithTooltip(_wallClimbSpeed, "Wall Climb Speed", "At what speed the player is climbing the wall");
                 
                 EditorGUI.indentLevel--;
             }

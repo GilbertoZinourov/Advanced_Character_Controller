@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Advanced_Movement.Individual_Mechanics{
-    public class Gravity : Mechanic
+    public class GravityAndJump : Mechanic
     {
         private int _numberOfGroundedCheckPoints, _numberOfPossibleJumps;
         private float _jumpsRemaining;
