@@ -84,7 +84,8 @@ namespace Advanced_Movement.Individual_Mechanics{
         private void Movement(Vector2 input){
             if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
                 _pm.currentState == PlayerMovement.PlayerStates.InAir || 
-                _pm.currentState == PlayerMovement.PlayerStates.Mantling) return;
+                _pm.currentState == PlayerMovement.PlayerStates.Mantling ||
+                _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
             float targetSpeed;
             if (input.magnitude <= .01f){
                 targetSpeed = 0;
@@ -113,7 +114,6 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void LookAround(Vector2 input){
-            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling) return;
             
             if (_invertedX){
                 input.x *= -1;
@@ -129,23 +129,26 @@ namespace Advanced_Movement.Individual_Mechanics{
 
             switch (_pm.desiredPerspective){
                 case PlayerMovement.FirstOrThird.First:
-                    transform.Rotate(Vector3.up * input.x);
                     _pm.firstPersonCameraPosition.localRotation = Quaternion.Euler(_xRotation, 0, 0);
                     break;
                 case PlayerMovement.FirstOrThird.Third:
-                    transform.Rotate(Vector3.up * input.x);
                     _pm.centerOfRotation.localRotation = Quaternion.Euler(_xRotation, 0, 0);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling || _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
+            
+            transform.Rotate(Vector3.up * input.x);
         }
 
         // Applica il movimento al CharacterController tenendo in considerazione le irregolarità del terreno
         private void Move(){
             if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
                 _pm.currentState == PlayerMovement.PlayerStates.InAir ||
-                _pm.currentState == PlayerMovement.PlayerStates.Mantling) return;
+                _pm.currentState == PlayerMovement.PlayerStates.Mantling ||
+                _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
             RaycastHit hit;
             if (Physics.Raycast(transform.position, Vector3.down, out hit, _groundMask)){
                 Vector3 right = new Vector3(_pm.MovementDirection.z, 0, -_pm.MovementDirection.x);

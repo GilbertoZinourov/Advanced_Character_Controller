@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Advanced_Movement.Individual_Mechanics{
     public class MantleAndWallClimb : Mechanic{
-        public List<Vector3> _checkers;
+        private List<Vector3> _checkers;
 
         public int _numOfCheckers = 4;
         public float _playerHeight = 2;
@@ -13,11 +13,13 @@ namespace Advanced_Movement.Individual_Mechanics{
 
         public LayerMask ground;
 
-        public bool isMantling = false;
+        public bool isMantling = false, isWallClimbing = false;
 
         private float _distanceBetweenCheckers = 0;
 
         public float mantleTimeVert = .8f, mantleTimeHor = .2f;
+
+        public float wallClimbTime = 2f, climbSpeed = 4;
 
         private void Update(){
             CheckIfNearWall();
@@ -46,6 +48,8 @@ namespace Advanced_Movement.Individual_Mechanics{
         private void CheckIfNearWall(){
             if (!Physics.Raycast(transform.position + _checkers[0], transform.forward, _distance, ground)) return;
 
+            // Da cambiare per ledge fini
+            
             bool atLedge = false;
             int index = 999;
 
@@ -68,10 +72,45 @@ namespace Advanced_Movement.Individual_Mechanics{
                 //print("At ledge and the free raycast is the number " + (index + 1));
                 StartCoroutine(Mantle(index + 1));
             }
+            else{
+                if (_pm.currentState == PlayerMovement.PlayerStates.Running && !isWallClimbing){
+                    StartCoroutine(WallClimb());
+                }
+            }
+        }
+
+        private IEnumerator WallClimb(){
+            isWallClimbing = true;
+
+            _pm.currentState = PlayerMovement.PlayerStates.WallRunning;
+            
+            var time = 0f;
+
+            RaycastHit hit;
+
+            while (time < wallClimbTime){
+                if(Physics.Raycast(transform.position + _checkers[(int)_checkers.Count/2], transform.forward, out hit, ground))
+                {
+                    var climbDir = Vector3.Cross(hit.normal, -transform.right);
+                    _pm.MovementDirection = climbDir * climbSpeed;
+                    _pm.controller.Move(_pm.MovementDirection * Time.deltaTime);
+                }
+
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+            _pm.currentState = PlayerMovement.PlayerStates.Idle;
+            isWallClimbing = false;
+            yield return null;
         }
 
         private IEnumerator Mantle(int index){
             isMantling = true;
+            
+            StopCoroutine(WallClimb());
+            isWallClimbing = false;
+            
             _pm.ChangePlayerState(PlayerMovement.PlayerStates.Mantling);
 
             var start = transform.position;
@@ -83,7 +122,6 @@ namespace Advanced_Movement.Individual_Mechanics{
                 time += Time.deltaTime;
                 yield return null;
             }
-            print("Done first");
             start = transform.position;
             targetPos = transform.position + transform.forward * _distance * 1.5f;
 
@@ -94,7 +132,6 @@ namespace Advanced_Movement.Individual_Mechanics{
                 time += Time.deltaTime;
                 yield return null;
             }
-            print("Done all");
             
             _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
             
