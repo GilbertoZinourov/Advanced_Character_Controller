@@ -7,7 +7,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         private int _numberOfGroundedCheckPoints, _numberOfPossibleJumps;
         private float _jumpsRemaining;
         private float _radiusOfGroundedCheckPoints, _groundCheckCastDistance, _gravity, _fallMultiplier, _jumpForce;
-        private bool _isInAir;
+        private bool _isInAir, _canJump;
 
         private List<Vector3> _gravityCheckersList;
         private float _fallSpeed = 0;
@@ -21,8 +21,12 @@ namespace Advanced_Movement.Individual_Mechanics{
         private CrouchAndSlide _crouchScript;
         private EightDirMovement _dirMovementScript;
 
+        private Vector3 _playerCenter;
+        private float _ceilingCheckCastDistance;
+
         private void Update(){
             CheckGrounded();
+            CheckCeiling();
         }
 
         protected override void OnEnable(){
@@ -51,11 +55,15 @@ namespace Advanced_Movement.Individual_Mechanics{
             _fallMultiplier = _pm.fallMultiplier;
 
             _groundMask = _pm.groundMask;
+            _canJump = _pm.canJump;
 
             _numberOfPossibleJumps = _pm.numberOfPossibleJumps;
             _jumpForce = _pm.jumpForce;
 
             _jumpsRemaining = _numberOfPossibleJumps;
+
+            _playerCenter = _pm.centerOfPlayer;
+            _ceilingCheckCastDistance = _pm.ceilingCheckCastDistance;
             
             CreateGravityCheckers();
 
@@ -79,7 +87,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             for (int i = 0; i < _numberOfGroundedCheckPoints; i++)
             {
                 float currentAngleInRad = currentAngle * Mathf.Deg2Rad;
-                Vector3 pointPosition = new Vector3(Mathf.Cos(currentAngleInRad), 0, Mathf.Sin(currentAngleInRad)) * _radiusOfGroundedCheckPoints;
+                Vector3 pointPosition = _playerCenter + new Vector3(Mathf.Cos(currentAngleInRad), 0, Mathf.Sin(currentAngleInRad)) * _radiusOfGroundedCheckPoints;
         
                 _gravityCheckersList.Add(pointPosition);
             
@@ -139,6 +147,17 @@ namespace Advanced_Movement.Individual_Mechanics{
             }
         }
 
+        private void CheckCeiling(){
+            if (_pm.currentState != PlayerMovement.PlayerStates.InAir) return;
+            for (int i = 0; i < _gravityCheckersList.Count; i++){
+                if (_fallSpeed > 0 && Physics.Raycast(transform.position + _gravityCheckersList[i], Vector3.up,
+                    _ceilingCheckCastDistance)){
+                    _fallSpeed = 0;
+                    break;
+                }
+            }
+        }
+
         private void Movement(Vector2 input){
             if (_pm.currentState != PlayerMovement.PlayerStates.InAir) return;
             float targetSpeed;
@@ -156,7 +175,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
         
         private void Jump(){
-            if (_jumpsRemaining > 0){
+            if (_canJump && _jumpsRemaining > 0){
                 _fallSpeed = _jumpForce;
                 _pm.MovementDirection = new Vector3(_pm.MovementDirection.x, _fallSpeed, _pm.MovementDirection.z);
                 if (_isInAir){

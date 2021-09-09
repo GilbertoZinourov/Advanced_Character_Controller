@@ -50,8 +50,10 @@ namespace Editor.Advanced_Movement{
         private SerializedProperty _numberOfGroundCheckPoints;
         private SerializedProperty _radiusOfGroundedCheckPoints;
         private SerializedProperty _groundCheckDistance;
+        private SerializedProperty _ceilingCheckDistance;
         private SerializedProperty _gravity;
         private SerializedProperty _fallMultiplier;
+        private SerializedProperty _canJump;
         private SerializedProperty _jumpForce;
         private SerializedProperty _numberOfPossibleJumps;
         private SerializedProperty _fallOffSpeed;
@@ -76,11 +78,12 @@ namespace Editor.Advanced_Movement{
         #endregion
 
         private void OnEnable(){
-            var castedTarget = target as PlayerMovement;
-            castedTarget.GetComponent<EightDirMovement>().hideFlags = HideFlags.HideInInspector;
-            castedTarget.GetComponent<GravityAndJump>().hideFlags = HideFlags.HideInInspector;
-            castedTarget.GetComponent<CrouchAndSlide>().hideFlags = HideFlags.HideInInspector;
-            castedTarget.GetComponent<MantleAndWallClimb>().hideFlags = HideFlags.HideInInspector;
+            
+             var castedTarget = target as PlayerMovement;
+            castedTarget.GetComponent<EightDirMovement>().hideFlags = HideFlags.None;
+            castedTarget.GetComponent<GravityAndJump>().hideFlags = HideFlags.None;
+            castedTarget.GetComponent<CrouchAndSlide>().hideFlags = HideFlags.None;
+            castedTarget.GetComponent<MantleAndWallClimb>().hideFlags = HideFlags.None;
             
             _playerMovement = (PlayerMovement) target;
         
@@ -105,10 +108,12 @@ namespace Editor.Advanced_Movement{
             _slideTime = serializedObject.FindProperty("slideTime");
             
             _groundCheckDistance = serializedObject.FindProperty("groundCheckCastDistance");
+            _ceilingCheckDistance = serializedObject.FindProperty("ceilingCheckCastDistance");
             _numberOfGroundCheckPoints = serializedObject.FindProperty("numberOfGroundedCheckPoints");
             _radiusOfGroundedCheckPoints = serializedObject.FindProperty("radiusOfGroundedCheckPoints");
             _gravity = serializedObject.FindProperty("gravity");
             _fallMultiplier = serializedObject.FindProperty("fallMultiplier");
+            _canJump = serializedObject.FindProperty("canJump");
             _jumpForce = serializedObject.FindProperty("jumpForce");
             _numberOfPossibleJumps = serializedObject.FindProperty("numberOfPossibleJumps");
             _fallOffSpeed = serializedObject.FindProperty("fallOffSpeed");
@@ -293,19 +298,26 @@ namespace Editor.Advanced_Movement{
         private void ShowGravityAndJumpVariables()
         {
             EditorGUILayout.LabelField("Gravity Variables", EditorStyles.boldLabel);
+            AddPropertyWithTooltip(_centerOfPlayer, "Center Of Player", "The center point of the player model relative to the root");
             EditorGUILayout.PropertyField(_numberOfGroundCheckPoints);
             EditorGUILayout.PropertyField(_radiusOfGroundedCheckPoints);
             EditorGUILayout.PropertyField(_groundMask);
             EditorGUILayout.PropertyField(_groundCheckDistance);
+            AddPropertyWithTooltip(_ceilingCheckDistance, "Ceiling Check Distance", "The distance from the center of the player model at witch check the presence of a ceiling");
             EditorGUILayout.PropertyField(_gravity);
             EditorGUILayout.PropertyField(_fallMultiplier);
             
             EditorGUILayout.Space(10);
             
             EditorGUILayout.LabelField("Jump Variables", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_jumpForce);
-            EditorGUILayout.PropertyField(_numberOfPossibleJumps);
-            
+            AddPropertyWithTooltip(_canJump, "Can Jump", "Can the player jump or not");
+            if (_canJump.boolValue){
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(_jumpForce);
+                EditorGUILayout.PropertyField(_numberOfPossibleJumps);
+                EditorGUI.indentLevel--;
+            }
+
             EditorGUILayout.Space(10);
             
             EditorGUILayout.LabelField("In Air Variables", EditorStyles.boldLabel);

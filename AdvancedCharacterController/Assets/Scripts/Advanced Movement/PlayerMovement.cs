@@ -108,10 +108,11 @@ namespace Advanced_Movement{
 
         [Range(4, 16)] public int numberOfGroundedCheckPoints = 4;
         public float radiusOfGroundedCheckPoints;
-        public float groundCheckCastDistance = .5f;
+        public float groundCheckCastDistance = .5f, ceilingCheckCastDistance = .6f;
         public float gravity = 9.8f;
         public float fallMultiplier = 1.5f;
 
+        public bool canJump;
         public float jumpForce;
         [Range(1, 10)] public int numberOfPossibleJumps = 1;
         [Range(0, 100)] public float fallOffSpeed;
@@ -259,10 +260,11 @@ namespace Advanced_Movement{
             {
                 float currentAngleInRad = currentAngle * Mathf.Deg2Rad;
                 Vector3 pointPosition =
-                    transform.position + (new Vector3(Mathf.Cos(currentAngleInRad), 0, Mathf.Sin(currentAngleInRad)) * radiusOfGroundedCheckPoints);
+                    transform.position + centerOfPlayer + (new Vector3(Mathf.Cos(currentAngleInRad), 0, Mathf.Sin(currentAngleInRad)) * radiusOfGroundedCheckPoints);
                 Gizmos.DrawSphere(pointPosition, .1f);
                 Gizmos.DrawLine(pointPosition, pointPosition + Vector3.down * groundCheckCastDistance);
                 currentAngle += gradPerSegment;
+                Gizmos.DrawLine(pointPosition, pointPosition + Vector3.up * ceilingCheckCastDistance);
             }
         }
         
