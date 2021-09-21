@@ -154,7 +154,7 @@ namespace Advanced_Movement.Individual_Mechanics{
                 _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
                 _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, _groundMask)){
+            if (Physics.Raycast(transform.position +_pm.controller.center, Vector3.down, out hit, _groundMask)){
                 Vector3 right = new Vector3(_pm.MovementDirection.z, 0, -_pm.MovementDirection.x);
                 _pm.MovementDirection = Vector3.Cross(right, hit.normal).normalized;
             }

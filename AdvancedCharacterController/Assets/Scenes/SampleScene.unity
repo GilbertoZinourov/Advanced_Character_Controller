@@ -382,6 +382,9 @@ MonoBehaviour:
   lookAdjustSpeed: 2.13
   _inCoroutine: 0
   _inLoop: 0
+  _canWallJump: 1
+  verticalAdjust: 0
+  jumpForce: 5
 --- !u!1 &196767441
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,7 +534,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275436578}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.7, y: 0, z: 2.7}
+  m_LocalPosition: {x: 0, y: 0, z: 2.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 562412130}
@@ -595,7 +598,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &540887681
 BoxCollider:
   m_ObjectHideFlags: 0
