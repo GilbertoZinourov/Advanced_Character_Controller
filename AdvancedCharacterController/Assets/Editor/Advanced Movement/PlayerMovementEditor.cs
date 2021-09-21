@@ -218,6 +218,9 @@ namespace Editor.Advanced_Movement{
                 case PlayerMovement.PlayerStates.WallRunning:
                     state = "Wall Running";
                     break;
+                case PlayerMovement.PlayerStates.WallClimbing:
+                    state = "Wall Climbing";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

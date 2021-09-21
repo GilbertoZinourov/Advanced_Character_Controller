@@ -86,6 +86,7 @@ namespace Advanced_Movement.Individual_Mechanics{
 
             if (atLedge && !_isMantling && 
                 (_pm.currentState == PlayerMovement.PlayerStates.InAir || 
+                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing || 
                 _pm.currentState == PlayerMovement.PlayerStates.WallRunning)){
                 StopAllCoroutines();
                 _isWallClimbing = false;
@@ -101,7 +102,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         private IEnumerator WallClimb(){
             _isWallClimbing = true;
 
-            _pm.currentState = PlayerMovement.PlayerStates.WallRunning;
+            _pm.currentState = PlayerMovement.PlayerStates.WallClimbing;
             
             var time = 0f;
 
@@ -136,6 +137,9 @@ namespace Advanced_Movement.Individual_Mechanics{
                 time += Time.deltaTime;
                 yield return null;
             }
+
+            //print("First");
+            
             start = transform.position;
             targetPos = transform.position + transform.forward * _distance * 1.5f;
 
@@ -146,6 +150,8 @@ namespace Advanced_Movement.Individual_Mechanics{
                 time += Time.deltaTime;
                 yield return null;
             }
+            
+            //print("Second");
             
             _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
             

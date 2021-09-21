@@ -85,6 +85,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
                 _pm.currentState == PlayerMovement.PlayerStates.InAir || 
                 _pm.currentState == PlayerMovement.PlayerStates.Mantling ||
+                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
                 _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
             float targetSpeed;
             if (input.magnitude <= .01f){
@@ -138,7 +139,9 @@ namespace Advanced_Movement.Individual_Mechanics{
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling || _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
+            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling || 
+                _pm.currentState == PlayerMovement.PlayerStates.WallRunning || 
+                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing) return;
             
             transform.Rotate(Vector3.up * input.x);
         }
@@ -148,6 +151,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
                 _pm.currentState == PlayerMovement.PlayerStates.InAir ||
                 _pm.currentState == PlayerMovement.PlayerStates.Mantling ||
+                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
                 _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
             RaycastHit hit;
             if (Physics.Raycast(transform.position, Vector3.down, out hit, _groundMask)){

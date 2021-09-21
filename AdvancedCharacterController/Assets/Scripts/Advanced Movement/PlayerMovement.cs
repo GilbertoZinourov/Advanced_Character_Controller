@@ -31,6 +31,7 @@ namespace Advanced_Movement{
             Sliding,
             InAir,
             Mantling,
+            WallClimbing,
             WallRunning,
         }
 

@@ -97,6 +97,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         
         private void CheckGrounded(){
             if (_pm.currentState == PlayerMovement.PlayerStates.Mantling ||
+                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
                 _pm.currentState == PlayerMovement.PlayerStates.WallRunning){
                 _fallSpeed = 0;
                 return;
