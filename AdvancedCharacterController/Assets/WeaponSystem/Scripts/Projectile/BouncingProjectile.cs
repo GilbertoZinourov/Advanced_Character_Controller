@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 using UnityEditor;
 using UnityEngine;
 
@@ -16,7 +16,6 @@ namespace Advanced_Weapon_System {
 		}
 
 		private void OnHit(Collision other) {
-			Debug.Log("Bouncing");
 			if (currentBounce > 0) {
 				if (projectile.collider.material != projectile.projectileSettings.gravityBouncingMaterial) {
 					projectile.movementComponent.Dir = Vector3.Reflect(transform.forward, other.contacts[0].normal);
@@ -64,7 +63,7 @@ namespace Advanced_Weapon_System {
 			
 			DrawPredictedReflectionPattern(position, direction,bounce-1);
 		}
+#endif
 	}
 	
-#endif
 }

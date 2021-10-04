@@ -18,7 +18,6 @@ namespace Advanced_Weapon_System {
 		
 		public PhysicMaterial gravityMaterial;
 		public PhysicMaterial gravityBouncingMaterial;
-		
 	}
 
 }

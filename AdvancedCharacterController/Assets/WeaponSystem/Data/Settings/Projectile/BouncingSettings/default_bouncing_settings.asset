@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 277f998621be4f65b1990e489e1b1880, type: 3}
   m_Name: default_bouncing_settings
   m_EditorClassIdentifier: 
-  maxReflectionCount: 5
-  maxStepDistance: 200
+  settingsData:
+    maxReflectionCount: 3
+    maxStepDistance: 1000

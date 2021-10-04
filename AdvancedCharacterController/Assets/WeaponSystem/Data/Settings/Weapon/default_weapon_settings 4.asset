@@ -10,7 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c2349adf5c7bc043ba6b555868dc9c3, type: 3}
-  m_Name: default_weapon_settings
+  m_Name: default_weapon_settings 4
   m_EditorClassIdentifier: 
   showBouncingPreview: 1
-  showExplosivePreview: 0
+  fireRate: 4
+  fireType: 2
+  fireRaffic: 1
+  maxBullets: 100

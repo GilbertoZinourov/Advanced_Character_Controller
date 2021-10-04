@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cbdd0f7539a47e5b60af5f68f95a6d5, type: 3}
+  m_Name: default_projectile_settings 2
+  m_EditorClassIdentifier: 
+  movementType: 1
+  behaviourTypes: 02000000
+  movementSettings: {fileID: 11400000, guid: cff287621cb720a478c7d01ded319746, type: 2}
+  bouncingSettings: {fileID: 11400000, guid: fb8e60f4c09284048ac21b94b50337a6, type: 2}
+  explosiveSettings: {fileID: 11400000, guid: 236f027d41a58bc4fbe6a183e02878ce, type: 2}
+  bulletDamage: 3
+  gravityMaterial: {fileID: 13400000, guid: f7893796df2d7e14aa081235890028f0, type: 2}
+  gravityBouncingMaterial: {fileID: 13400000, guid: f95996ff9d61a024ebdd244c5eee26da, type: 2}

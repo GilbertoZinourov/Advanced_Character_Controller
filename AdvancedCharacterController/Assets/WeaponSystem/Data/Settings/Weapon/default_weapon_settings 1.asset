@@ -9,8 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277f998621be4f65b1990e489e1b1880, type: 3}
-  m_Name: bouncing_settings_2
+  m_Script: {fileID: 11500000, guid: 5c2349adf5c7bc043ba6b555868dc9c3, type: 3}
+  m_Name: default_weapon_settings 1
   m_EditorClassIdentifier: 
-  maxReflectionCount: 3
-  maxStepDistance: 100
+  showBouncingPreview: 1
+  fireRate: 3
+  fireType: 1
+  fireRaffic: 3
+  maxBullets: 40

@@ -1,132 +1,227 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Playables;
 using UnityEngine;
 
 namespace Advanced_Weapon_System {
+
+	public class EquippedPowerUp {
+		public TogglePowerUp powerUp;
+		public bool equipped;
+
+		public EquippedPowerUp(TogglePowerUp power, bool equip) {
+			powerUp = power;
+			equipped = equip;
+		}
+	}
 	
 	public class Weapon : MonoBehaviour {
-		public WeaponSettings weaponSettings;
+		[SerializeField] private WeaponSettings weaponSettings;
+		[SerializeField] private ProjectileSettings projectileSettings;
+		private Projectile projectile;
 		public GameObject projectilePrefab;
-		[HideInInspector] public GameObject projectileInstance;
 		public Transform firePoint;
-		[HideInInspector] public Projectile projectile;
+		private GameObject projectileInstance;
+		public LineController lineController;
+		public List<Transform> laserPoints=new List<Transform>();
+
+		public UIPowerUp uiPowerUp;
+
+		private List<EquippedPowerUp> powerUps=new List<EquippedPowerUp>();
+
+		public WeaponSettings WeaponSettings {
+			get => weaponSettings;
+			set {
+				weaponSettings = value;
+				Init();
+			}
+		}
+		public ProjectileSettings ProjectileSettings {
+			get => projectileSettings;
+			set { 
+				projectileSettings = value;
+				Init();
+			}
+		}
+		public Projectile Projectile {
+			get => projectile;
+			set => projectile = value;
+		}
+		
+		private int currentBullet;
+		public int CurrentBullet => currentBullet;
 
 		private float timer = 0;
+		public float Timer {
+			get {
+				if (timer > 1 / weaponSettings.fireRate) {
+					return 1 / weaponSettings.fireRate;
+				}
+				return timer;
+			}
+		}
+
 		private bool canFire = false;
+		private bool alreadyFired = false;
 		private int fireRafficCount = 0;
-		
-		private void Start() {
+
+		public event Action Fired;
+		public event Action TypeChanged;
+		public event Action Initialized;
+		public event Action FireRateChanged;
+		public event Action BulletChange;
+
+		public void Init() {
 			//projectileInstance=(GameObject)PrefabUtility.InstantiatePrefab(projectilePrefab, transform);
-			projectileInstance=Instantiate(projectilePrefab, firePoint.transform.position, transform.rotation,transform);
-			projectile = projectileInstance.GetComponent<Projectile>();
-			projectile.AddBehaviours();
-			timer = 0;
-			canFire = false;
+			projectileInstance = Instantiate(projectilePrefab, firePoint.transform.position, transform.rotation, transform);
+			Projectile = projectileInstance.GetComponent<Projectile>();
+			Projectile.AddBehaviours(projectileSettings);
+			timer = 1 / weaponSettings.fireRate;
+			canFire = true;
 			fireRafficCount = 0;
+			currentBullet = weaponSettings.maxBullets;
+			AddLaserPoints();
+			Initialized?.Invoke();
 		}
 
 		private void Update() {
-			timer += Time.deltaTime;
-			if (timer > 1 / weaponSettings.fireRate) {
-				canFire = true;
+			if (timer < 1 / weaponSettings.fireRate) {
+				timer += Time.deltaTime;
 			}
+			else {
+				if (currentBullet > 0) {
+					canFire = true;
+				}
+			}
+			
+			var position = transform.position + transform.forward * 0.5f;
+			if (weaponSettings.showBouncingPreview) {
+				if (Projectile && Projectile.projectileSettings != null && Projectile.projectileSettings.bouncingSettings != null) {
+					BouncingSettingsData bouncingSettings = Projectile.projectileSettings.bouncingSettings;
+					DrawLine(position, transform.forward, bouncingSettings.maxReflectionCount, bouncingSettings.maxReflectionCount, bouncingSettings.maxStepDistance);
+				}
+			}
+			else {
+				DrawLine(position, transform.forward, 0,0,500);
+			}
+		}
+
+		private void AddLaserPoints() {
+			laserPoints.Clear();
+			laserPoints.Add(firePoint);
+			if (weaponSettings.showBouncingPreview) {
+				for (int i = 0; i < Projectile.projectileSettings.bouncingSettings.maxReflectionCount+1; i++) {
+					var go = new GameObject($"LaserPoint-{i+1}");
+					go.transform.SetParent(lineController.transform);
+					//Instantiate(go,lineController.transform);
+					laserPoints.Add(go.transform);
+				}
+			}
+			else {
+				var go = new GameObject($"LaserPoint-{1}");
+				go.transform.SetParent(lineController.transform);
+				//Instantiate(go,lineController.transform);
+				laserPoints.Add(go.transform);
+			}
+			lineController.SetLine(laserPoints.ToArray());
+		}
+
+		public void FireWithWeapon() {
 			if (canFire) {
 				switch (weaponSettings.fireType) {
 					case FireType.Muanual:
-						if (Input.GetButtonDown("Fire1")) {
+						if (!alreadyFired) {
 							Fire();
 						}
 						break;
 					case FireType.SemiAutomatic:
 						if (fireRafficCount < weaponSettings.fireRaffic) {
-							if (Input.GetButton("Fire1")) {
-								Fire();
-								fireRafficCount++;
-							}
+							Fire();
+							fireRafficCount++;
 						}
 						break;
 					case FireType.Automatic:
-						if (Input.GetButton("Fire1")) {
-							Fire();
-						}
+						Fire();
 						break;
 				}
 			}
-			if (Input.GetButtonUp("Fire1")) {
-				fireRafficCount = 0;
+		}
+
+		public void ChangeWeaponType() {
+			switch (weaponSettings.fireType) {
+				case FireType.Muanual:
+					weaponSettings.fireType = FireType.SemiAutomatic;
+					break;
+				case FireType.SemiAutomatic:
+					weaponSettings.fireType = FireType.Automatic;
+					break;
+				case FireType.Automatic:
+					weaponSettings.fireType = FireType.Muanual;
+					break;
 			}
+			TypeChanged?.Invoke();
+		}
+
+		public void ResetRafficCount() {
+			fireRafficCount = 0;
+			alreadyFired = false;
+		}
+
+		public void Recharge() {
+			currentBullet = weaponSettings.maxBullets;
+			BulletChange?.Invoke();
 		}
 
 		private void Fire() {
-			var obj=Instantiate(projectileInstance, firePoint.transform.position, transform.rotation);
+			var obj = Instantiate(projectileInstance, firePoint.transform.position, transform.rotation);
 			obj.SetActive(true);
 			canFire = false;
+			alreadyFired = true;
 			timer = 0;
-			
-		}
-		
-		void OnDrawGizmos()
-		{
-			if (weaponSettings.showBouncingPreview) {
-				Handles.color = Color.red;
-				Handles.ArrowHandleCap(0, transform.position + transform.forward * 0.25f, transform.rotation, 0.25f, EventType.Repaint);
-
-				DrawPredictedReflectionPattern(transform.position + transform.forward * 0.5f, transform.forward, projectile.projectileSettings.bouncingSettings.maxReflectionCount);
-			}else if (weaponSettings.showExplosivePreview) {
-				DrawPredictedExplosivePattern(transform.position + transform.forward * 0.5f,transform.forward);
-			}
+			currentBullet--;
+			Fired?.Invoke();
+			BulletChange?.Invoke();
 		}
 
-		private void DrawPredictedReflectionPattern(Vector3 position, Vector3 direction, int reflectionsRemaining)
-		{
-			if (reflectionsRemaining == 0) {
-				return;
-			}
+		public void AddMaxAmmo(int maxAmmo) {
+			weaponSettings.maxBullets += maxAmmo;
+			currentBullet += maxAmmo;
+			BulletChange?.Invoke();
+		}
 
-			Vector3 startingPosition = position;
+		public void AddFireRate(float fireRate) {
+			weaponSettings.fireRate += fireRate;
+			FireRateChanged?.Invoke();
+		}
 
+		public void AddPowerUp(TogglePowerUp powerUp) {
+			powerUp.Apply();
+			powerUps.Add(new EquippedPowerUp(powerUp,true));
+			uiPowerUp.CreatePowerUp(powerUp);
+		}
+
+		public void EquipPowerUp(int index) {
+			powerUps[index].powerUp.Apply();
+		}
+
+		public void RevertPowerUp(int index) {
+			powerUps[index].powerUp.Revert();
+		}
+
+		private void DrawLine(Vector3 position, Vector3 direction,int totalReflections, int reflectionsRemaining,float maxDistance) {
 			Ray ray = new Ray(position, direction);
 			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit, projectile.projectileSettings.bouncingSettings.maxStepDistance))
-			{
+			if (Physics.Raycast(ray, out hit, maxDistance)) {
 				direction = Vector3.Reflect(direction, hit.normal);
 				position = hit.point;
 			}
-			else
-			{
-				position += direction * projectile.projectileSettings.bouncingSettings.maxStepDistance;
-			}
-			
-			if (weaponSettings.showExplosivePreview) {
-				DrawPredictedExplosivePattern(position, direction);
-			}
-			Gizmos.color = Color.green;
-			Gizmos.DrawLine(startingPosition, position);
-			DrawPredictedReflectionPattern(position, direction, reflectionsRemaining - 1);
-		}
-
-		private void DrawPredictedExplosivePattern(Vector3 position, Vector3 direction) {
-			Vector3 startingPosition = position;
-
-			Ray ray = new Ray(position, direction);
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit))
-			{
-				position = hit.point;
-				Gizmos.color = Color.red;
-				Gizmos.DrawWireSphere(position,projectile.projectileSettings.explosiveSettings.smallRadius);
-				Gizmos.color = Color.yellow;
-				Gizmos.DrawWireSphere(position,projectile.projectileSettings.explosiveSettings.bigRadius);
-				Gizmos.DrawLine(startingPosition, position);
-			}
 			else {
-				Gizmos.color = Color.yellow;
-				Gizmos.DrawLine(position, direction*1000);
+				position += direction * maxDistance;
 			}
+			laserPoints[totalReflections+1 - reflectionsRemaining].transform.position = position;
+			if (reflectionsRemaining == 0) {
+				return;
+			}
+			DrawLine(position, direction, totalReflections,reflectionsRemaining - 1,maxDistance);
 		}
 	}
-
 }

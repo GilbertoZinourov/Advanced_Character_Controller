@@ -12,28 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe3610709bc4d30a27724916672f88f, type: 3}
   m_Name: default_movement_settings
   m_EditorClassIdentifier: 
-  graphic:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.10469324
-      value: 0.099928364
-      inSlope: 0.00047690023
-      outSlope: 0.00047690023
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9998169
-      value: 0.100455105
-      inSlope: 0.00047690023
-      outSlope: 0.00047690023
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  lifeTime: 20
+  settingsData:
+    graphic:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -0.0008130081
+        value: 0.1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    lifeTime: 100
