@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Advanced_Movement.Individual_Mechanics{

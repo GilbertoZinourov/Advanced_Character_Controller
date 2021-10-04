@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Advanced_Movement{
     public class PlayerMovement : MonoBehaviour
@@ -13,7 +12,9 @@ namespace Advanced_Movement{
         {
             Nothing = 0,
             Base8DirMovement = 1 << 0,
-            GravityAndJump = 1 << 1,
+            CrouchAndSlide = 1 << 1,
+            GravityAndJump = 1 << 2,
+            MantleAndWallClimb = 1 << 3,
         }
     
         public enum FirstOrThird
@@ -27,10 +28,14 @@ namespace Advanced_Movement{
             Idle,
             Walking,
             Running,
-            Falling,
+            Sliding,
+            InAir,
+            Mantling,
+            WallClimbing,
+            WallRunning,
         }
 
-        public enum RunMode{
+        public enum PressMode{
             Toggle,
             Hold
         }
@@ -42,7 +47,9 @@ namespace Advanced_Movement{
         public Action<Vector2> OnMouseInput;
         public Action OnRunningInputPressed;
         public Action OnRunningInputReleased;
-
+        public Action OnCrouchInputPressed;
+        public Action OnCrouchInputReleased;
+        
         public Action OnJumpInputPressed;
         
         #region Perspective Variables
@@ -79,22 +86,49 @@ namespace Advanced_Movement{
         public float minVerticalLookClampValue = -90;
         public float maxVerticalLookClampValue = 90;
         public LayerMask groundMask;
-        public RunMode runMode;
+        public PressMode runMode;
+        
+        private Vector3 _movementDirection;
+        
+        public Vector3 MovementDirection{
+            get => _movementDirection;
+            set => _movementDirection = value;
+        }
 
         #endregion
 
+        #region Crouch And Slide
+        
+        public bool canSlide;
+        public PressMode crouchMode;
+        public float crouchTime, slideTime;
+
+        #endregion
+        
         #region Gravity And Jump Variables
 
         [Range(4, 16)] public int numberOfGroundedCheckPoints = 4;
         public float radiusOfGroundedCheckPoints;
-        public float groundCheckCastDistance = .5f;
+        public float groundCheckCastDistance = .5f, ceilingCheckCastDistance = .6f;
         public float gravity = 9.8f;
         public float fallMultiplier = 1.5f;
 
+        public bool canJump;
         public float jumpForce;
         [Range(1, 10)] public int numberOfPossibleJumps = 1;
-        public bool canMoveInAir;
+        [Range(0, 100)] public float fallOffSpeed;
+        public float maxInAirSpeed;
 
+        #endregion
+        
+        #region Mantle And WallClimb Variables
+
+        public int numberOfCheckers = 10;
+        public float playerHeight = 2, checkDistance = .6f, mantleTimeVert = .4f, 
+            mantleTimeHor = .2f, wallClimbTime = 2f, wallClimbSpeed = 4;
+        public Vector3 centerOfPlayer = Vector3.zero;
+        public bool canWallClimb;
+        
         #endregion
 
         #region Unity Methods
@@ -179,24 +213,30 @@ namespace Advanced_Movement{
             OnRunningInputReleased?.Invoke();
         }
         
+        public void Crouching(){
+            OnCrouchInputPressed?.Invoke();
+        }
+        
+        public void CrouchingOff(){
+            OnCrouchInputReleased?.Invoke();
+        }
+        
         public void Jump(){
             OnJumpInputPressed?.Invoke();
         }
 
         #endregion
+
+        #region PlayerStates
         
-        // 
-        //
-        // #region PlayerStates
-        //
-        // private void ChangePlayerState(PlayerStates state)
-        // {
-        //     if (currentState == state) return;
-        //     currentState = state;
-        // }
-        //
-        // #endregion
-        //
+        public void ChangePlayerState(PlayerStates state)
+        {
+            if (currentState == state) return;
+            currentState = state;
+        }
+        
+        #endregion
+        
         #region Gizmos
         
         private void OnDrawGizmosSelected()
@@ -204,8 +244,8 @@ namespace Advanced_Movement{
             Color defaultColor = Gizmos.color;
             // Gizmos.color = Color.blue;
             // Gizmos.DrawLine(transform.position, transform.position + Vector3.down * 5);
-            // Gizmos.color = Color.green;
-            // Gizmos.DrawLine(transform.position, transform.position + _finalDir);
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, transform.position + MovementDirection.normalized);
         
             DrawGravityCheckers(Color.red);
             Gizmos.color = defaultColor;
@@ -221,10 +261,11 @@ namespace Advanced_Movement{
             {
                 float currentAngleInRad = currentAngle * Mathf.Deg2Rad;
                 Vector3 pointPosition =
-                    transform.position + (new Vector3(Mathf.Cos(currentAngleInRad), 0, Mathf.Sin(currentAngleInRad)) * radiusOfGroundedCheckPoints);
+                    transform.position + centerOfPlayer + (new Vector3(Mathf.Cos(currentAngleInRad), 0, Mathf.Sin(currentAngleInRad)) * radiusOfGroundedCheckPoints);
                 Gizmos.DrawSphere(pointPosition, .1f);
                 Gizmos.DrawLine(pointPosition, pointPosition + Vector3.down * groundCheckCastDistance);
                 currentAngle += gradPerSegment;
+                Gizmos.DrawLine(pointPosition, pointPosition + Vector3.up * ceilingCheckCastDistance);
             }
         }
         
