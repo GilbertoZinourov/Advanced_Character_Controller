@@ -16,7 +16,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         private bool _invertedX, _invertedY, _isRunning;
         private LayerMask _groundMask;
 
-        private PlayerMovement.PressMode _runMode;
+        private AdvancedMovement.PressMode _runMode;
 
         protected override void OnEnable(){
             base.OnEnable();
@@ -57,22 +57,23 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         protected override void CheckIfEnabled(){
-            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.Base8DirMovement.ToString()];
+            enabled = _pm.mechanicsDictionary[AdvancedMovement.Mechanics.Base8DirMovement.ToString()];
         }
 
         private void Running(){
+            if (_pm.currentState == AdvancedMovement.PlayerStates.Sliding) return;
             switch (_runMode){
-                case PlayerMovement.PressMode.Toggle:
+                case AdvancedMovement.PressMode.Toggle:
                     _isRunning = !_isRunning;
                     break;
-                case PlayerMovement.PressMode.Hold:
+                case AdvancedMovement.PressMode.Hold:
                     _isRunning = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (_isRunning && _pm.mechanicsDictionary[PlayerMovement.Mechanics.CrouchAndSlide.ToString()]){
+            if (_isRunning && _pm.mechanicsDictionary[AdvancedMovement.Mechanics.CrouchAndSlide.ToString()]){
                 GetComponent<CrouchAndSlide>().CrouchOff();
             }
         }
@@ -82,28 +83,28 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void Movement(Vector2 input){
-            if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
-                _pm.currentState == PlayerMovement.PlayerStates.InAir || 
-                _pm.currentState == PlayerMovement.PlayerStates.Mantling ||
-                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
-                _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
+            if (_pm.currentState == AdvancedMovement.PlayerStates.Sliding ||
+                _pm.currentState == AdvancedMovement.PlayerStates.InAir || 
+                _pm.currentState == AdvancedMovement.PlayerStates.Mantling ||
+                _pm.currentState == AdvancedMovement.PlayerStates.WallClimbing ||
+                _pm.currentState == AdvancedMovement.PlayerStates.WallRunning) return;
             float targetSpeed;
             if (input.magnitude <= .01f){
                 targetSpeed = 0;
-                if (_runMode == PlayerMovement.PressMode.Toggle){
+                if (_runMode == AdvancedMovement.PressMode.Toggle){
                     RunningOff();
                 }
 
-                _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
+                _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Idle);
             }
             else{
                 if (_isRunning){
                     targetSpeed = _runSpeed;
-                    _pm.ChangePlayerState(PlayerMovement.PlayerStates.Running);
+                    _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Running);
                 }
                 else{
                     targetSpeed = input.magnitude * _walkSpeed;
-                    _pm.ChangePlayerState(PlayerMovement.PlayerStates.Walking);
+                    _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Walking);
                 }
             }
 
@@ -129,30 +130,30 @@ namespace Advanced_Movement.Individual_Mechanics{
             _xRotation = Mathf.Clamp(_xRotation, _minVerticalLookClampValue, _maxVerticalLookClampValue);
 
             switch (_pm.desiredPerspective){
-                case PlayerMovement.FirstOrThird.First:
+                case AdvancedMovement.FirstOrThird.First:
                     _pm.firstPersonCameraPosition.localRotation = Quaternion.Euler(_xRotation, 0, 0);
                     break;
-                case PlayerMovement.FirstOrThird.Third:
+                case AdvancedMovement.FirstOrThird.Third:
                     _pm.centerOfRotation.localRotation = Quaternion.Euler(_xRotation, 0, 0);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling || 
-                _pm.currentState == PlayerMovement.PlayerStates.WallRunning || 
-                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing) return;
+            if (_pm.currentState == AdvancedMovement.PlayerStates.Mantling || 
+                _pm.currentState == AdvancedMovement.PlayerStates.WallRunning || 
+                _pm.currentState == AdvancedMovement.PlayerStates.WallClimbing) return;
             
             transform.Rotate(Vector3.up * input.x);
         }
 
         // Applica il movimento al CharacterController tenendo in considerazione le irregolarità del terreno
         private void Move(){
-            if (_pm.currentState == PlayerMovement.PlayerStates.Sliding ||
-                _pm.currentState == PlayerMovement.PlayerStates.InAir ||
-                _pm.currentState == PlayerMovement.PlayerStates.Mantling ||
-                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
-                _pm.currentState == PlayerMovement.PlayerStates.WallRunning) return;
+            if (_pm.currentState == AdvancedMovement.PlayerStates.Sliding ||
+                _pm.currentState == AdvancedMovement.PlayerStates.InAir ||
+                _pm.currentState == AdvancedMovement.PlayerStates.Mantling ||
+                _pm.currentState == AdvancedMovement.PlayerStates.WallClimbing ||
+                _pm.currentState == AdvancedMovement.PlayerStates.WallRunning) return;
             RaycastHit hit;
             if (Physics.Raycast(transform.position +_pm.controller.center, Vector3.down, out hit, _groundMask)){
                 Vector3 right = new Vector3(_pm.MovementDirection.z, 0, -_pm.MovementDirection.x);
@@ -160,7 +161,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             }
 
             _pm.MovementDirection *= _currentMovementSpeed;
-            if (_pm.MovementDirection.magnitude <= .01f && _runMode == PlayerMovement.PressMode.Toggle){
+            if (_pm.MovementDirection.magnitude <= .01f && _runMode == AdvancedMovement.PressMode.Toggle){
                 RunningOff();
             }
 

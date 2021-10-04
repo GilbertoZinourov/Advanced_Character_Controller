@@ -6,10 +6,10 @@ using UnityEditor;
 using UnityEngine;
 
 namespace Editor.Advanced_Movement{
-    [CustomEditor(typeof(PlayerMovement))]
-    public class PlayerMovementEditor : UnityEditor.Editor
+    [CustomEditor(typeof(AdvancedMovement))]
+    public class AdvancedMovementEditor : UnityEditor.Editor
     {
-        private PlayerMovement _playerMovement;
+        private AdvancedMovement _AdvancedMovement;
         private static Dictionary<string, bool> _foldoutsDictionary = new Dictionary<string, bool>();
 
         #region Perspective Variables
@@ -42,6 +42,7 @@ namespace Editor.Advanced_Movement{
         private SerializedProperty _crouchTime;
         private SerializedProperty _canSlide;
         private SerializedProperty _slideTime;
+        private SerializedProperty _slideEndingSpeedPercentage;
 
         #endregion
 
@@ -79,13 +80,13 @@ namespace Editor.Advanced_Movement{
 
         private void OnEnable(){
             
-             var castedTarget = target as PlayerMovement;
-            castedTarget.GetComponent<EightDirMovement>().hideFlags = HideFlags.None;
-            castedTarget.GetComponent<GravityAndJump>().hideFlags = HideFlags.None;
-            castedTarget.GetComponent<CrouchAndSlide>().hideFlags = HideFlags.None;
-            castedTarget.GetComponent<MantleAndWallClimb>().hideFlags = HideFlags.None;
+             var castedTarget = target as AdvancedMovement;
+            castedTarget.GetComponent<EightDirMovement>().hideFlags = HideFlags.NotEditable;
+            castedTarget.GetComponent<GravityAndJump>().hideFlags = HideFlags.NotEditable;
+            castedTarget.GetComponent<CrouchAndSlide>().hideFlags = HideFlags.NotEditable;
+            castedTarget.GetComponent<MantleAndWallClimb>().hideFlags = HideFlags.NotEditable;
             
-            _playerMovement = (PlayerMovement) target;
+            _AdvancedMovement = (AdvancedMovement) target;
         
             _desiredPerspective = serializedObject.FindProperty("desiredPerspective");
             _playerHeadPosition = serializedObject.FindProperty("firstPersonCameraPosition");
@@ -106,6 +107,7 @@ namespace Editor.Advanced_Movement{
             _crouchTime = serializedObject.FindProperty("crouchTime");
             _canSlide = serializedObject.FindProperty("canSlide");
             _slideTime = serializedObject.FindProperty("slideTime");
+            _slideEndingSpeedPercentage = serializedObject.FindProperty("slideEndingSpeedPercentage");
             
             _groundCheckDistance = serializedObject.FindProperty("groundCheckCastDistance");
             _ceilingCheckDistance = serializedObject.FindProperty("ceilingCheckCastDistance");
@@ -144,7 +146,7 @@ namespace Editor.Advanced_Movement{
 
         private void CreateDictionary()
         {
-            foreach(PlayerMovement.Mechanics flag in Enum.GetValues(typeof(PlayerMovement.Mechanics)))
+            foreach(AdvancedMovement.Mechanics flag in Enum.GetValues(typeof(AdvancedMovement.Mechanics)))
             {
                 if (flag <= 0 || _foldoutsDictionary.ContainsKey(flag.ToString())) continue;
                 _foldoutsDictionary.Add(flag.ToString(), false);
@@ -163,17 +165,17 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.PropertyField(_desiredPerspective);
 
             EditorGUI.indentLevel++;
-            switch (_playerMovement.desiredPerspective)
+            switch (_AdvancedMovement.desiredPerspective)
             {
-                case PlayerMovement.FirstOrThird.First:
-                    if (!_playerMovement.firstPersonCameraPosition)
+                case AdvancedMovement.FirstOrThird.First:
+                    if (!_AdvancedMovement.firstPersonCameraPosition)
                     {
                         EditorGUILayout.HelpBox("Please assign the Players Head Transform.", MessageType.Error);
                     }
                     EditorGUILayout.PropertyField(_playerHeadPosition);
                     break;
-                case PlayerMovement.FirstOrThird.Third:
-                    if (!_playerMovement.centerOfRotation)
+                case AdvancedMovement.FirstOrThird.Third:
+                    if (!_AdvancedMovement.centerOfRotation)
                     {
                         EditorGUILayout.HelpBox("Please assign the Cameras Center Of Rotation.", MessageType.Error);
                     }
@@ -195,30 +197,30 @@ namespace Editor.Advanced_Movement{
             EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
             string state = "";
 
-            switch (_playerMovement.currentState)
+            switch (_AdvancedMovement.currentState)
             {
-                case PlayerMovement.PlayerStates.Idle:
+                case AdvancedMovement.PlayerStates.Idle:
                     state = "Idle";
                     break;
-                case PlayerMovement.PlayerStates.Walking:
+                case AdvancedMovement.PlayerStates.Walking:
                     state = "Walking";
                     break;
-                case PlayerMovement.PlayerStates.Running:
+                case AdvancedMovement.PlayerStates.Running:
                     state = "Running";
                     break;
-                case PlayerMovement.PlayerStates.InAir:
+                case AdvancedMovement.PlayerStates.InAir:
                     state = "In Air";
                     break;
-                case PlayerMovement.PlayerStates.Sliding:
+                case AdvancedMovement.PlayerStates.Sliding:
                     state = "Sliding";
                     break;
-                case PlayerMovement.PlayerStates.Mantling:
+                case AdvancedMovement.PlayerStates.Mantling:
                     state = "Mantling";
                     break;
-                case PlayerMovement.PlayerStates.WallRunning:
+                case AdvancedMovement.PlayerStates.WallRunning:
                     state = "Wall Running";
                     break;
-                case PlayerMovement.PlayerStates.WallClimbing:
+                case AdvancedMovement.PlayerStates.WallClimbing:
                     state = "Wall Climbing";
                     break;
                 default:
@@ -232,10 +234,10 @@ namespace Editor.Advanced_Movement{
         {
             EditorGUILayout.LabelField("Mechanics", EditorStyles.boldLabel);
         
-            _playerMovement.desiredMechanics = (PlayerMovement.Mechanics) EditorGUILayout.EnumFlagsField("Desired Mechanics", _playerMovement.desiredMechanics);
-            foreach(PlayerMovement.Mechanics flag in Enum.GetValues(typeof(PlayerMovement.Mechanics)))
+            _AdvancedMovement.desiredMechanics = (AdvancedMovement.Mechanics) EditorGUILayout.EnumFlagsField("Desired Mechanics", _AdvancedMovement.desiredMechanics);
+            foreach(AdvancedMovement.Mechanics flag in Enum.GetValues(typeof(AdvancedMovement.Mechanics)))
             {
-                if ((_playerMovement.desiredMechanics & flag) <= 0) continue;
+                if ((_AdvancedMovement.desiredMechanics & flag) <= 0) continue;
                 var flagString = flag.ToString();
                 
                 _foldoutsDictionary[flagString] = EditorGUILayout.Foldout(_foldoutsDictionary[flagString], flag.ToString());
@@ -244,18 +246,18 @@ namespace Editor.Advanced_Movement{
                     EditorGUI.indentLevel++;
                     switch(flag)
                     {
-                        case PlayerMovement.Mechanics.Nothing:
+                        case AdvancedMovement.Mechanics.Nothing:
                             break;
-                        case PlayerMovement.Mechanics.Base8DirMovement:
+                        case AdvancedMovement.Mechanics.Base8DirMovement:
                             Show8DirMovementVariables();
                             break;
-                        case PlayerMovement.Mechanics.GravityAndJump:
+                        case AdvancedMovement.Mechanics.GravityAndJump:
                             ShowGravityAndJumpVariables();
                             break;
-                        case PlayerMovement.Mechanics.CrouchAndSlide:
+                        case AdvancedMovement.Mechanics.CrouchAndSlide:
                             ShowCrouchAndSlideVariables();
                             break;
-                        case PlayerMovement.Mechanics.MantleAndWallClimb:
+                        case AdvancedMovement.Mechanics.MantleAndWallClimb:
                             ShowMantleAndWallClimbVariables();
                             break;
                         default:
@@ -337,6 +339,7 @@ namespace Editor.Advanced_Movement{
                 
                 EditorGUILayout.PropertyField(_slideTime);
                 EditorGUILayout.PropertyField(_groundMask);
+                AddPropertyWithTooltip(_slideEndingSpeedPercentage, "Final Speed Percentage", "The percentage of the running speed at witch the slide will end");
                 
                 EditorGUI.indentLevel--;
             }

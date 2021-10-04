@@ -191,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e1b168a2111a3746bc99c4d64844894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desiredPerspective: 0
+  desiredPerspective: 1
   firstPersonCameraPosition: {fileID: 196767442}
   centerOfRotation: {fileID: 646620214}
   radiusOfRotation: 5
@@ -214,7 +214,8 @@ MonoBehaviour:
   canSlide: 1
   crouchMode: 0
   crouchTime: 0.1
-  slideTime: 4
+  slideTime: 1.5
+  slideEndingSpeedPercentage: 10
   numberOfGroundedCheckPoints: 4
   radiusOfGroundedCheckPoints: 0.45
   groundCheckCastDistance: 1.1
@@ -314,7 +315,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &187949778
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 8
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -326,7 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &187949779
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 8
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -338,7 +339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &187949780
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 8
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -350,7 +351,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &187949781
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 8
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

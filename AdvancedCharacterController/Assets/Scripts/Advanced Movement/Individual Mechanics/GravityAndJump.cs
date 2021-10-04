@@ -44,7 +44,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         protected override void CheckIfEnabled(){
-            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.GravityAndJump.ToString()];
+            enabled = _pm.mechanicsDictionary[AdvancedMovement.Mechanics.GravityAndJump.ToString()];
         }
 
         protected override void VariablesSetUp(){
@@ -96,9 +96,9 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
         
         private void CheckGrounded(){
-            if (_pm.currentState == PlayerMovement.PlayerStates.Mantling ||
-                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing ||
-                _pm.currentState == PlayerMovement.PlayerStates.WallRunning){
+            if (_pm.currentState == AdvancedMovement.PlayerStates.Mantling ||
+                _pm.currentState == AdvancedMovement.PlayerStates.WallClimbing ||
+                _pm.currentState == AdvancedMovement.PlayerStates.WallRunning){
                 _fallSpeed = 0;
                 return;
             }
@@ -110,15 +110,15 @@ namespace Advanced_Movement.Individual_Mechanics{
                         _fallSpeed = 0;
                         _jumpsRemaining = _numberOfPossibleJumps;
                         _isInAir = false;
-                        if (_pm.currentState == PlayerMovement.PlayerStates.InAir){
-                            _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
+                        if (_pm.currentState == AdvancedMovement.PlayerStates.InAir){
+                            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Idle);
                         }
 
                         return;
                     }
                 }
             }
-            _pm.ChangePlayerState(PlayerMovement.PlayerStates.InAir);
+            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.InAir);
             _fallSpeed -= _gravity * _fallMultiplier * Time.deltaTime;
             
             // Add a Lerp to zero on the (x, z) plane?
@@ -149,7 +149,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void CheckCeiling(){
-            if (_pm.currentState != PlayerMovement.PlayerStates.InAir) return;
+            if (_pm.currentState != AdvancedMovement.PlayerStates.InAir) return;
             for (int i = 0; i < _gravityCheckersList.Count; i++){
                 if (_fallSpeed > 0 && Physics.Raycast(transform.position + _gravityCheckersList[i], Vector3.up,
                     _ceilingCheckCastDistance)){
@@ -160,7 +160,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void Movement(Vector2 input){
-            if (_pm.currentState != PlayerMovement.PlayerStates.InAir) return;
+            if (_pm.currentState != AdvancedMovement.PlayerStates.InAir) return;
             float targetSpeed;
             if (input.magnitude <= .01f){
                 targetSpeed = 0;
