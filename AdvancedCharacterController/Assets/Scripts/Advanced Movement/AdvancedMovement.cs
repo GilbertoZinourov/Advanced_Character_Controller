@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Advanced_Movement{
-    public class PlayerMovement : MonoBehaviour
+    public class AdvancedMovement : MonoBehaviour
     {
         #region Enumerators
 
@@ -102,6 +102,7 @@ namespace Advanced_Movement{
         public bool canSlide;
         public PressMode crouchMode;
         public float crouchTime, slideTime;
+        [Range(0, 100)] public int slideEndingSpeedPercentage;
 
         #endregion
         

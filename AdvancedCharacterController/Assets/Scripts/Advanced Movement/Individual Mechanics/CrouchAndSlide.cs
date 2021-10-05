@@ -7,8 +7,11 @@ namespace Advanced_Movement.Individual_Mechanics{
 
         private bool _canSlide;
         private float _crouchTime, _slideTime;
+
+        private int _slideEndingSpeedPercentage; 
+        
         private LayerMask _groundMask;
-        private PlayerMovement.PressMode _crouchMode;
+        private AdvancedMovement.PressMode _crouchMode;
 
         private bool _isCrouching;
         private bool _isInCoroutine;
@@ -18,6 +21,9 @@ namespace Advanced_Movement.Individual_Mechanics{
         private float _startHeight = 2f, _targetHeight = 1f;
         private Vector3 _startPos = new Vector3(0, 0, 0), _targetPos = new Vector3(0, -.5f, 0);
         private Vector3 _startCamPos, _targetCamPos;
+
+        private EightDirMovement _baseMovement;
+        private float _runSpeed;
         
         
         protected override void OnEnable(){
@@ -35,7 +41,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         protected override void CheckIfEnabled(){
-            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.CrouchAndSlide.ToString()];
+            enabled = _pm.mechanicsDictionary[AdvancedMovement.Mechanics.CrouchAndSlide.ToString()];
         }
 
         protected override void VariablesSetUp(){
@@ -44,7 +50,11 @@ namespace Advanced_Movement.Individual_Mechanics{
             _slideTime = _pm.slideTime;
             _groundMask = _pm.groundMask;
             _crouchMode = _pm.crouchMode;
+            _slideEndingSpeedPercentage = _pm.slideEndingSpeedPercentage;
+            _runSpeed = _pm.runSpeed;
 
+            _baseMovement = _pm.mechanicsDictionary[AdvancedMovement.Mechanics.Base8DirMovement.ToString()] ? GetComponent<EightDirMovement>() : null;
+            
             _camPivot = Camera.main.transform.parent;
             
             if (_isCrouching){
@@ -58,12 +68,12 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void Crouch(){
-            if (_isInCoroutine) return;
+            if (_isInCoroutine || _pm.currentState == AdvancedMovement.PlayerStates.Sliding) return;
             switch(_crouchMode){
-                case PlayerMovement.PressMode.Toggle:
+                case AdvancedMovement.PressMode.Toggle:
                     _isCrouching = !_isCrouching;
                     break;
-                case PlayerMovement.PressMode.Hold:
+                case AdvancedMovement.PressMode.Hold:
                     _isCrouching = true;
                     break;
                 default:
@@ -74,12 +84,40 @@ namespace Advanced_Movement.Individual_Mechanics{
                 StartCoroutine(CrouchUnCrouch(
                     _startPos, _startHeight, _startCamPos,
                     _targetPos, _targetHeight, _targetCamPos));
+                if (_canSlide && _pm.currentState == AdvancedMovement.PlayerStates.Running){
+                    StartCoroutine(Slide());
+                }
             }
             else{
                 StartCoroutine(CrouchUnCrouch(
                     _targetPos, _targetHeight, _targetCamPos, 
                     _startPos, _startHeight, _startCamPos));
             }
+        }
+
+        private IEnumerator Slide(){
+            if (_baseMovement){
+                _baseMovement.RunningOff();
+            }
+            
+            Vector3 start = _pm.MovementDirection * _runSpeed;
+            Vector3 end = (start / 100) * _slideEndingSpeedPercentage;
+            
+            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Sliding);
+
+            float time = 0;
+
+            while(time < _slideTime){
+                if (_pm.currentState == AdvancedMovement.PlayerStates.InAir) break;
+                time += Time.deltaTime;
+                _pm.MovementDirection = Vector3.Lerp(start, end, time/_slideTime);
+                _pm.controller.Move(_pm.MovementDirection * Time.deltaTime);
+                yield return null;
+            }
+            
+            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Idle);
+            yield return null;
+            
         }
 
         public void CrouchOff(){

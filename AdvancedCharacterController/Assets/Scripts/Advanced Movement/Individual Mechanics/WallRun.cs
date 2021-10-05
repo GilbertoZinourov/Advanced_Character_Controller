@@ -38,12 +38,12 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void WallJump(){
-            if (!_canWallJump || _pm.currentState != PlayerMovement.PlayerStates.WallRunning) return;
-
-            Vector3 jumpVector = (_pm.MovementDirection.normalized - transform.right + transform.up).normalized *
-                                 jumpForce;
-            _pm.ChangePlayerState(PlayerMovement.PlayerStates.InAir);
-            _pm.MovementDirection = jumpVector;
+            // if (!_canWallJump || _pm.currentState != AdvancedMovement.PlayerStates.WallRunning) return;
+            //
+            // Vector3 jumpVector = (_pm.MovementDirection.normalized - transform.right + transform.up).normalized *
+            //                      jumpForce;
+            // _pm.ChangePlayerState(AdvancedMovement.PlayerStates.InAir);
+            // _pm.MovementDirection = jumpVector;
         }
 
         private void InputPressed(Vector2 obj){
@@ -59,7 +59,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         private void CheckWall(){
-            if (_pm.currentState != PlayerMovement.PlayerStates.InAir) return;
+            if (_pm.currentState != AdvancedMovement.PlayerStates.InAir) return;
 
             float gradPerSegment = 180f / (_checkersPerSide + 1);
             float currentAngle = 0f;
@@ -70,14 +70,14 @@ namespace Advanced_Movement.Individual_Mechanics{
                 Vector3 pointPos = transform.right * Mathf.Sin(currentAngleInRad) +
                                    transform.forward * Mathf.Cos(currentAngleInRad);
                 if (Physics.Raycast(transform.position, pointPos, _distance, _groundMask)){
-                    //_pm.ChangePlayerState(PlayerMovement.PlayerStates.WallRunning);
+                    //_pm.ChangePlayerState(AdvancedMovement.PlayerStates.WallRunning);
                     _onWall = 1;
                 }
 
                 pointPos = -transform.right * Mathf.Sin(currentAngleInRad) +
                            transform.forward * Mathf.Cos(currentAngleInRad);
                 if (Physics.Raycast(transform.position, pointPos, _distance, _groundMask)){
-                    //_pm.ChangePlayerState(PlayerMovement.PlayerStates.WallRunning);
+                    //_pm.ChangePlayerState(AdvancedMovement.PlayerStates.WallRunning);
                     _onWall = 2;
                 }
             }
@@ -86,13 +86,13 @@ namespace Advanced_Movement.Individual_Mechanics{
         private IEnumerator WallRunning(){
             _inCoroutine = true;
             _inLoop = true;
-            _pm.ChangePlayerState(PlayerMovement.PlayerStates.WallRunning);
+            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.WallRunning);
 
             RaycastHit hit;
             
             //print("Start");
 
-            while (_inLoop && _pm.currentState == PlayerMovement.PlayerStates.WallRunning){
+            while (_inLoop && _pm.currentState == AdvancedMovement.PlayerStates.WallRunning){
                 if (Physics.Raycast(transform.position, transform.right, out hit, _distance * 2, _groundMask) ||
                     Physics.Raycast(transform.position, -transform.right, out hit, _distance * 2, _groundMask)){
                     Vector3 secondVector = Vector3.zero;
@@ -116,8 +116,8 @@ namespace Advanced_Movement.Individual_Mechanics{
             }
 
             _onWall = 0;
-            if (_pm.currentState == PlayerMovement.PlayerStates.WallRunning){
-                _pm.ChangePlayerState(PlayerMovement.PlayerStates.InAir);
+            if (_pm.currentState == AdvancedMovement.PlayerStates.WallRunning){
+                _pm.ChangePlayerState(AdvancedMovement.PlayerStates.InAir);
             }
 
             //print("Finish");

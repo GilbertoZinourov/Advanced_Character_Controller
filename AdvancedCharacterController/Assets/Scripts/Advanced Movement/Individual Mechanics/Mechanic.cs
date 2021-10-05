@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace Advanced_Movement.Individual_Mechanics{
    public class Mechanic : MonoBehaviour{
-      protected PlayerMovement _pm;
+      protected AdvancedMovement _pm;
       
       private void Awake(){
-         _pm = GetComponent<PlayerMovement>();
+         _pm = GetComponent<AdvancedMovement>();
       }
 
       private void Start(){

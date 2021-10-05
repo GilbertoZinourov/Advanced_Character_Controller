@@ -47,7 +47,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         }
 
         protected override void CheckIfEnabled(){
-            enabled = _pm.mechanicsDictionary[PlayerMovement.Mechanics.MantleAndWallClimb.ToString()];
+            enabled = _pm.mechanicsDictionary[AdvancedMovement.Mechanics.MantleAndWallClimb.ToString()];
         }
 
         private void CreateCheckers(){
@@ -85,15 +85,15 @@ namespace Advanced_Movement.Individual_Mechanics{
             }
 
             if (atLedge && !_isMantling && 
-                (_pm.currentState == PlayerMovement.PlayerStates.InAir || 
-                _pm.currentState == PlayerMovement.PlayerStates.WallClimbing || 
-                _pm.currentState == PlayerMovement.PlayerStates.WallRunning)){
+                (_pm.currentState == AdvancedMovement.PlayerStates.InAir || 
+                _pm.currentState == AdvancedMovement.PlayerStates.WallClimbing || 
+                _pm.currentState == AdvancedMovement.PlayerStates.WallRunning)){
                 StopAllCoroutines();
                 _isWallClimbing = false;
                 StartCoroutine(Mantle(index + 1));
             }
             else{
-                if (_canWallClimb && atWall && _pm.currentState == PlayerMovement.PlayerStates.Running && !_isWallClimbing){
+                if (_canWallClimb && atWall && _pm.currentState == AdvancedMovement.PlayerStates.Running && !_isWallClimbing){
                     StartCoroutine(WallClimb());
                 }
             }
@@ -102,7 +102,7 @@ namespace Advanced_Movement.Individual_Mechanics{
         private IEnumerator WallClimb(){
             _isWallClimbing = true;
 
-            _pm.currentState = PlayerMovement.PlayerStates.WallClimbing;
+            _pm.currentState = AdvancedMovement.PlayerStates.WallClimbing;
             
             var time = 0f;
 
@@ -119,14 +119,14 @@ namespace Advanced_Movement.Individual_Mechanics{
                 time += Time.deltaTime;
                 yield return null;
             }
-            _pm.currentState = PlayerMovement.PlayerStates.Idle;
+            _pm.currentState = AdvancedMovement.PlayerStates.Idle;
             _isWallClimbing = false;
             yield return null;
         }
 
         private IEnumerator Mantle(int index){
             _isMantling = true;
-            _pm.ChangePlayerState(PlayerMovement.PlayerStates.Mantling);
+            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Mantling);
 
             var start = transform.position;
             var targetPos = start + Vector3.up * _distanceBetweenCheckers * index;
@@ -153,7 +153,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             
             //print("Second");
             
-            _pm.ChangePlayerState(PlayerMovement.PlayerStates.Idle);
+            _pm.ChangePlayerState(AdvancedMovement.PlayerStates.Idle);
             
             _isMantling = false;
             yield return null;

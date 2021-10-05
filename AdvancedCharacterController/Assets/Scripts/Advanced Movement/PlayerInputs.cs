@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace Advanced_Movement{
     public class PlayerInputs : MonoBehaviour{
-        private PlayerMovement _movement;
+        private AdvancedMovement _movement;
         private Vector2 _inputWASD;
         private Vector2 _inputMouse;
 
         private void Awake(){
-            _movement = GetComponent<PlayerMovement>();
+            _movement = GetComponent<AdvancedMovement>();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
