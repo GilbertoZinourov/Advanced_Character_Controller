@@ -31,6 +31,8 @@ namespace Advanced_Movement.Individual_Mechanics{
             
             _pm.OnCrouchInputPressed += Crouch;
             _pm.OnCrouchInputReleased += CrouchOff;
+            _pm.OnJumpInputPressed += CrouchOff;
+            _pm.OnRunningInputPressed += CrouchOff;
         }
 
         protected override void OnDisable(){
@@ -38,6 +40,8 @@ namespace Advanced_Movement.Individual_Mechanics{
             
             _pm.OnCrouchInputPressed -= Crouch;
             _pm.OnCrouchInputReleased -= CrouchOff;
+            _pm.OnJumpInputPressed -= CrouchOff;
+            _pm.OnRunningInputPressed -= CrouchOff;
         }
 
         protected override void CheckIfEnabled(){

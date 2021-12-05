@@ -142,9 +142,9 @@ namespace Advanced_Movement.Individual_Mechanics{
                 _jumpsRemaining--;
                 _isInAir = true;
                 
-                // Manage other movement in the moment of the jump
-                _crouchScript.CrouchOff();
-                _dirMovementScript.RunningOff();
+                // // Manage other movement in the moment of the jump
+                // _crouchScript.CrouchOff();
+                // _dirMovementScript.RunningOff();
             }
         }
 
