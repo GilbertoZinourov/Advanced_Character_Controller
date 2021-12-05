@@ -130,7 +130,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5aa95740e260b0040ac5968bb7f3df90, type: 3}
+  m_Script: {fileID: 11500000, guid: ffb83dd7f48a7fb4dbd7797fd21d1fe0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4497503563869538282
@@ -142,45 +142,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e1b168a2111a3746bc99c4d64844894, type: 3}
+  m_Script: {fileID: 11500000, guid: cb7f35c24a4bd2645874acb88edb18a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desiredPerspective: 1
+  desiredPerspective: 0
   firstPersonCameraPosition: {fileID: 4497503563877370869}
   centerOfRotation: {fileID: 4497503564226494737}
-  radiusOfRotation: 5
-  cameraOffset: {x: 2, y: 1, z: 0}
+  radiusOfRotation: 0
+  cameraOffset: {x: 0, y: 0, z: 0}
   controller: {fileID: 0}
   camTransform: {fileID: 0}
   desiredMechanics: -1
   currentState: 0
-  walkSpeed: 4
-  runSpeed: 8
+  walkSpeed: 0
+  runSpeed: 0
   invertedX: 0
   invertedY: 0
-  mouseSensitivity: 150
-  minVerticalLookClampValue: -80
-  maxVerticalLookClampValue: 80
+  mouseSensitivity: 0
+  minVerticalLookClampValue: -90
+  maxVerticalLookClampValue: 90
   groundMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   runMode: 0
-  canSlide: 1
+  canSlide: 0
   crouchMode: 0
-  crouchTime: 0.1
-  slideTime: 1.5
-  slideEndingSpeedPercentage: 10
+  crouchTime: 0
+  slideTime: 0
+  slideEndingSpeedPercentage: 0
   numberOfGroundedCheckPoints: 4
-  radiusOfGroundedCheckPoints: 0.45
-  groundCheckCastDistance: 1.1
-  ceilingCheckCastDistance: 1.1
+  radiusOfGroundedCheckPoints: 0
+  groundCheckCastDistance: 0.5
+  ceilingCheckCastDistance: 0.6
   gravity: 9.8
   fallMultiplier: 1.5
-  canJump: 1
-  jumpForce: 8
-  numberOfPossibleJumps: 2
-  fallOffSpeed: 5
-  maxInAirSpeed: 3
+  canJump: 0
+  jumpForce: 0
+  numberOfPossibleJumps: 1
+  fallOffSpeed: 0
+  maxInAirSpeed: 0
   numberOfCheckers: 10
   playerHeight: 2
   checkDistance: 0.6
@@ -189,7 +189,7 @@ MonoBehaviour:
   wallClimbTime: 2
   wallClimbSpeed: 4
   centerOfPlayer: {x: 0, y: 0, z: 0}
-  canWallClimb: 1
+  canWallClimb: 0
 --- !u!114 &4497503563869538293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b59a4a25b78fec498978801e3bdcfdb, type: 3}
+  m_Script: {fileID: 11500000, guid: c3c6742eeee26d344830730910fa7680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4497503563869538292
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f374593da6791f4bb68869c01780a62, type: 3}
+  m_Script: {fileID: 11500000, guid: b6b1a811c4c5e4149b7bddb66956a529, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4497503563869538291
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ad2679d1ec878144a2d25329d2b84ae, type: 3}
+  m_Script: {fileID: 11500000, guid: 1aedffbccdd6b3740a01eec4a5473668, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4497503563869538290
@@ -235,7 +235,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efd76efafc54eaf45b5aea3d97ede32d, type: 3}
+  m_Script: {fileID: 11500000, guid: cd023fa840bd87a438f1fd525dff8f3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &4497503563869538289
@@ -247,17 +247,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 4497503563869538283}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26fb6b3bd4b09e4459c0a2eacb85693a, type: 3}
+  m_Script: {fileID: 11500000, guid: a33fdd2859816134eb9a15560cab6afe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _checkersPerSide: 3
   _distance: 1
   _groundMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   _onWall: 0
-  wallRunningSpeed: 8
-  lookAdjustSpeed: 2.13
+  wallRunningSpeed: 0
+  lookAdjustSpeed: 1
   _inCoroutine: 0
   _inLoop: 0
   _canWallJump: 1
