@@ -14,12 +14,11 @@
 
 using System;
 using System.Collections.Generic;
-using Advanced_Movement;
 using Advanced_Movement.Individual_Mechanics;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.Advanced_Movement{
+namespace Advanced_Movement.Editor{
     [CustomEditor(typeof(AdvancedMovement))]
     public class AdvancedMovementEditor : UnityEditor.Editor
     {

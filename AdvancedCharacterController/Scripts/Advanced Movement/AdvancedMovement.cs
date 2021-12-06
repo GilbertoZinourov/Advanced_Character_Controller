@@ -163,8 +163,7 @@ namespace Advanced_Movement{
 
         #region Initialization Methods
 
-        private void MechanicsInit()
-        {
+        private void MechanicsInit() {
             foreach(Mechanics flag in Enum.GetValues(typeof(Mechanics)))
             {
                 if (flag <= 0 || mechanicsDictionary.ContainsKey(flag.ToString())) continue;
