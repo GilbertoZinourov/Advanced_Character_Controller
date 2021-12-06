@@ -1,0 +1,10 @@
+# Ignore everything
+/*
+/*/
+
+# But not these files...
+!.gitignore
+!/AdvancedCharacterController/
+
+# Ignore all .meta files...
+*.meta
