@@ -41,6 +41,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             _pm.OnRunningInputPressed += Running;
             _pm.OnRunningInputReleased += RunningOff;
             _pm.OnMouseInput += LookAround;
+            _pm.OnCrouchInputPressed += RunningOff;
         }
 
         protected override void OnDisable(){
@@ -50,6 +51,7 @@ namespace Advanced_Movement.Individual_Mechanics{
             _pm.OnRunningInputPressed -= Running;
             _pm.OnRunningInputReleased -= RunningOff;
             _pm.OnMouseInput -= LookAround;
+            _pm.OnCrouchInputPressed -= RunningOff;
         }
 
         private void Update(){
