@@ -205,6 +205,8 @@ namespace Advanced_Movement{
             {
                 controller = gameObject.AddComponent<CharacterController>();
             }
+
+            controller.stepOffset = 0;
         }
         
         #endregion
