@@ -96,7 +96,7 @@ namespace Advanced_Movement{
         public float walkSpeed;
         public float runSpeed;
         public bool invertedX, invertedY;
-        [Range(50, 350)] public float mouseSensitivity;
+        [Range(0, 200)] public float mouseSensitivity;
         public float minVerticalLookClampValue = -90;
         public float maxVerticalLookClampValue = 90;
         public LayerMask groundMask;
